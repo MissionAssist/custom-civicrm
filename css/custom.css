@@ -1,0 +1,26 @@
+/**
+ * @file: Custom CiviCRM Stylesheet
+ *
+ * NOTE: This file relates to [/administrator/components/com_civicrm/civicrm/css/civicrm.css]
+ * To make CiviCRM load this file and supersede the values in the main file, you have to enter
+ * the location for this file in the CiviCRM administrative setup: Administer - System Settings - Resource URLs
+ * Set "Custom css URL to this file, using the external (http/https) path.
+ *
+ * File last amended: 22 Jan 2015 by Paul Hicks.
+ */
+.crm-container .crm-section .label {
+  float: left;
+  width: 50%;
+  text-align: right;
+}
+.crm-container .crm-section .content {
+  margin-left: 60%;
+}
+/* crm-summary-group appears outside crm-container for contact summary icon overlay */
+#crm-container .crm-summary-group .crm-section .label,
+.crm-container .crm-summary-group .crm-section .label {
+  text-align: right;
+  width: 50%;
+  font-size: 11px;
+  color: #99ccff;
+}
