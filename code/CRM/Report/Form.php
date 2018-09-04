@@ -489,6 +489,14 @@ class CRM_Report_Form extends CRM_Core_Form {
   protected $sqlArray;
 
   /**
+   * Tables created for the report that need removal afterwards.
+   *
+   * ['civicrm_temp_report_x' => ['temporary' => TRUE, 'name' => 'civicrm_temp_report_x']
+   * @var array
+   */
+  protected $temporaryTables = [];
+
+  /**
    * Can this report use the sql mode ONLY_FULL_GROUP_BY.
    * @var bool
    */
@@ -3673,7 +3681,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
         WHERE smartgroup_contact.group_id IN ({$smartGroups}) ";
     }
 
-    $this->groupTempTable = 'civicrm_report_temp_group_' . date('Ymd_') . uniqid();
+    $this->groupTempTable = CRM_Utils_SQL_TempTable::build()->setCategory('rptgrp')->setId(date('Ymd_') . uniqid())->getName();
     $this->executeReportQuery("
       CREATE TEMPORARY TABLE $this->groupTempTable $this->_databaseAttributes
       $query
