@@ -2216,6 +2216,10 @@ WHERE  ce.loc_block_id = $locBlockId";
       }
     }
 
+    if ($eventId) {
+      return in_array($eventId, Civi::$statics[__CLASS__]['permissions'][$type]) ? TRUE : FALSE;
+    }
+
     return Civi::$statics[__CLASS__]['permissions'];
   }
 
