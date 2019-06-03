@@ -136,8 +136,6 @@ class CRM_Event_BAO_Participant extends CRM_Event_DAO_Participant {
 
     $participantBAO->save();
 
-    $session = CRM_Core_Session::singleton();
-
     CRM_Contact_BAO_GroupContactCache::opportunisticCacheFlush();
 
     if (!empty($params['id'])) {
@@ -555,7 +553,7 @@ INNER JOIN  civicrm_price_field field       ON ( value.price_field_id = field.id
             {$isTestClause}
             {$skipParticipantClause}";
 
-    $lineItem = CRM_Core_DAO::executeQuery($sql, array(1 => array($eventId, 'Positive')));
+    $lineItem = CRM_Core_DAO::executeQuery($sql, [1 => [$eventId, 'Positive']]);
     while ($lineItem->fetch()) {
       $count = $lineItem->count;
       if (!$count) {
