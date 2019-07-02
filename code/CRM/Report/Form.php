@@ -1301,7 +1301,10 @@ class CRM_Report_Form extends CRM_Core_Form {
             if (!empty($field['options']) ||
               $fieldName == 'state_province_id' || $fieldName == 'county_id'
             ) {
-              $element = $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations);
+              $element = $this->addElement('select', "{$fieldName}_op", ts('Operator:'), $operations,
+                array('onchange' => "return showHideMaxMinVal( '$fieldName', this.value );")
+              );
+
               if (count($operations) <= 1) {
                 $element->freeze();
               }
@@ -1777,6 +1780,8 @@ class CRM_Report_Form extends CRM_Core_Form {
         $result = [
           'in' => ts('Is one of'),
           'notin' => ts('Is not one of'),
+          'nll' => ts('Is empty (Null)'),
+          'nnll' => ts('Is not empty (Null)'),
         ];
         return $result;
 
@@ -2233,7 +2238,6 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     while ($dao->fetch()) {
       $customFields[$dao->table_name . '_custom_' . $dao->id] = $dao->id;
     }
-    $dao->free();
 
     $entryFound = FALSE;
     foreach ($rows as $rowNum => $row) {
@@ -5628,7 +5632,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
         'type' => CRM_Utils_Type::T_INT,
         'no_display' => TRUE,
         'required' => TRUE,
-        'dbAlias' => '(address_civireport.street_number % 2)',
+        'dbAlias' => "({$tableAlias}_civireport.street_number % 2)",
         'is_fields' => TRUE,
         'is_order_bys' => TRUE,
       ],
