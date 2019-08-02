@@ -2130,13 +2130,31 @@ class CRM_Report_Form extends CRM_Core_Form {
    * @return string
    */
   public function whereSubtypeClause($field, $value, $op) {
+    // Get the correct SQL operator.
+    switch ($op) {
+      case 'notin':
+        $op = 'nhas';
+        $clauseSeparator = 'AND';
+        break;
+
+      case 'in':
+        $op = 'has';
+        $clauseSeparator = 'OR';
+        break;
+    }
+    $sqlOp = $this->getSQLOperator($op);
     $clause = '( ';
     $subtypeFilters = count($value);
+    if ($sqlOp == 'IS NULL' || $sqlOp == 'IS NOT NULL') {
+      $clause .= "{$field['dbAlias']} $sqlOp";
+    }
+    else {
     for ($i = 0; $i < $subtypeFilters; $i++) {
-      $clause .= "{$field['dbAlias']} LIKE '%$value[$i]%'";
+        $clause .= "{$field['dbAlias']} $sqlOp '%$value[$i]%'";
       if ($i !== ($subtypeFilters - 1)) {
-        $clause .= " OR ";
+          $clause .= " $clauseSeparator ";
       }
+    }
     }
     $clause .= ' )';
     return $clause;
