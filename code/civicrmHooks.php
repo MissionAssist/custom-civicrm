@@ -4,7 +4,7 @@
  * 
  * Allow relationship data to be included in mailings
  * 
- * Tested with CiviCRM 5.1.2
+ * Tested with CiviCRM 5.19.2
  * 
  * This is where you put all the hook functions for CiviCRM under Joomla.  Hooks are a way
  * of intercepting actions in CiviCRM and doing custom things.
@@ -173,7 +173,7 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
 
                                   foreach($data as $field)
                                   {
-                                          $relationship_list .= str_pad($field, 16);  // pad it.
+                                          $relationship_list .= str_pad($field, 20);  // pad it.
                                   }
                                   $relationship_list .= "\n";  // end of line
 
@@ -418,10 +418,12 @@ function get_values_for_relationships($cids)
     foreach($cids as $contactID)
     {
         $relationshiplist[$contactID] = array();
-        $relationshiplist[$contactID]['header'] = array('Type', 'Name'); // First create the header.
+        $relationshiplist[$contactID]['header'] = array('Type', 'Name', 'Description'); // First create the header.
         $relationship_values = civicrm_api3('Relationship', 'get', array(
           'sequential' => 1,
-          'return' => array("contact_id_a.display_name", "relationship_type_id.label_b_a", 
+          'return' => array("contact_id_a.display_name",
+          "relationship_type_id.label_b_a", 
+          "description",
           "start_date",
           "end_date"),
           'contact_id_b' => $contactID,
@@ -455,7 +457,8 @@ function get_values_for_relationships($cids)
             if ($is_valid) {
               $relationshiplist[$contactID][$relationship['id']] = array(
                   'type' => $relationship['relationship_type_id.label_b_a'] . ':',
-                  'display_name' => $relationship['contact_id_a.display_name']
+                  'display_name' => $relationship['contact_id_a.display_name'],
+                  'description' => $relationship['description'],
                   );
             }
 
