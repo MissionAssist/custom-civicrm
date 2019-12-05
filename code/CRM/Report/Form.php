@@ -3377,7 +3377,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
             if ($value && empty($field['no_display'])) {
               $statistics['filters'][] = [
                 'title' => CRM_Utils_Array::value('title', $field),
-                'value' => $value,
+                'value' => CRM_Utils_String::htmlToText($value),
               ];
             }
           }
@@ -5040,37 +5040,6 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
       else {
         CRM_Core_Session::setStatus(ts("The listed records(s) cannot be added to the group."));
       }
-    }
-  }
-
-  /**
-   * Show charts on print screen.
-   */
-  public static function uploadChartImage() {
-    // upload strictly for '.png' images
-    $name = trim(basename(CRM_Utils_Request::retrieve('name', 'String', CRM_Core_DAO::$_nullObject, FALSE, NULL, 'GET')));
-    if (preg_match('/\.png$/', $name)) {
-
-      // Get the RAW .png from the input.
-      $httpRawPostData = file_get_contents("php://input");
-
-      // prepare the directory
-      $config = CRM_Core_Config::singleton();
-      $defaultPath
-        = str_replace('/persist/contribute/', '/persist/', $config->imageUploadDir) .
-        '/openFlashChart/';
-      if (!file_exists($defaultPath)) {
-        mkdir($defaultPath, 0777, TRUE);
-      }
-
-      // full path to the saved image including filename
-      $destination = $defaultPath . $name;
-
-      //write and save
-      $jfh = fopen($destination, 'w') or die("can't open file");
-      fwrite($jfh, $httpRawPostData);
-      fclose($jfh);
-      CRM_Utils_System::civiExit();
     }
   }
 
