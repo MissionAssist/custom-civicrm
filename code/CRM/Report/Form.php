@@ -3466,28 +3466,18 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
         echo $content;
       }
       else {
-        if ($chartType = CRM_Utils_Array::value('charts', $this->_params)) {
-          $config = CRM_Core_Config::singleton();
-          //get chart image name
-          $chartImg = $this->_chartId . '.png';
-          //get image url path
-          $uploadUrl
-            = str_replace('/persist/contribute/', '/persist/', $config->imageUploadURL) .
-            'openFlashChart/';
-          $uploadUrl .= $chartImg;
-          //get image doc path to overwrite
-          $uploadImg
-            = str_replace('/persist/contribute/', '/persist/', $config->imageUploadDir) .
-            'openFlashChart/' . $chartImg;
-          //Load the image
-          $chart = imagecreatefrompng($uploadUrl);
-          //convert it into formatted png
-          CRM_Utils_System::setHttpHeader('Content-type', 'image/png');
-          //overwrite with same image
-          imagepng($chart, $uploadImg);
-          //delete the object
-          imagedestroy($chart);
-        }
+        // Nb. Once upon a time we used a package called Open Flash Charts to
+        // draw charts, and we had a feature whereby a browser could send the
+        // server a PNG version of the chart, which could then be included in a
+        // PDF by including <img> tags in the HTML for the conversion below.
+        //
+        // This feature stopped working when browsers stopped supporting Flash,
+        // and although we have a different client-side charting library in
+        // place, we decided not to reimplement the (rather convoluted)
+        // browser-sending-rendered-chart-to-server process.
+        //
+        // If this feature is required in future we should find a better way to
+        // render charts on the server side, e.g. server-created SVG.
         CRM_Utils_PDF_Utils::html2pdf($content, "CiviReport.pdf", FALSE, ['orientation' => 'landscape']);
       }
       CRM_Utils_System::civiExit();
