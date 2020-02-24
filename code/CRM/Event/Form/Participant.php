@@ -978,6 +978,10 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
     if (!empty($params['contact_id'])) {
       $this->_contactID = $this->_contactId = $params['contact_id'];
     }
+    // Put the price set ID into parameters to get line items later.
+    if (isset($this->_priceSetId)){
+      $params['priceSetId'] = $this->_priceSetId;
+    }
     if ($this->_priceSetId && $isQuickConfig = CRM_Core_DAO::getFieldValue('CRM_Price_DAO_PriceSet', $this->_priceSetId, 'is_quick_config')) {
       $this->_quickConfig = $isQuickConfig;
     }
@@ -1022,6 +1026,19 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
             $hasLineItems
           );
         }
+        // Allow for multiple participants registered here.
+        $participants = [];
+        $participants += [$this->_id];
+        $participants += $additionalIds;
+        $totalAmount = 0;
+        foreach ($participants as $ID) {
+          // Loop through all participants.
+          $participantBAO = new CRM_Event_BAO_Participant();
+          $participantBAO->id = $ID;
+          $participantBAO->find(TRUE);
+          $totalAmount += $participantBAO->fee_amount;
+        }
+        $contributionParams['total_amount'] = $totalAmount;
       }
       else {
 
@@ -1839,21 +1856,33 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
     if ($form->_isPaidEvent) {
       $params = ['id' => $form->_eventId];
       CRM_Event_BAO_Event::retrieve($params, $event);
-
-      //retrieve custom information
+      $participants = [];
+      $participants += [$form->_id];
+      //retrieve custom information and additional participant information.
+      // Check if this is a primaryParticipant (registered for others) and retrieve additional participants if true
+      if (CRM_Event_BAO_Participant::isPrimaryParticipant($form->_id)) {
+        $form->_additionalParticipantIds = CRM_Event_BAO_Participant::getAdditionalParticipantIds($form->_id);
+        $participants += $form->_additionalParticipantIds;
+      }
       $form->_values = [];
-      CRM_Event_Form_Registration::initEventFee($form, $event['id']);
-      CRM_Event_Form_Registration_Register::buildAmount($form, TRUE, $form->_discountId);
       $lineItem = [];
-      $invoiceSettings = Civi::settings()->get('contribution_invoice_settings');
-      $invoicing = CRM_Utils_Array::value('invoicing', $invoiceSettings);
-      $totalTaxAmount = 0;
-      if (!CRM_Utils_System::isNull(CRM_Utils_Array::value('line_items', $form->_values))) {
-        $lineItem[] = $form->_values['line_items'];
-        foreach ($form->_values['line_items'] as $key => $value) {
-          $totalTaxAmount = $value['tax_amount'] + $totalTaxAmount;
+      // Retrieve data for all partipants registered by this one.
+      $oldID = $form->_id;
+      foreach ($participants as $participant) {
+        $form->_id = $participant;
+        CRM_Event_Form_Registration::initEventFee($form, $event['id']);
+        CRM_Event_Form_Registration_Register::buildAmount($form, TRUE, $form->_discountId);
+        $invoiceSettings = Civi::settings()->get('contribution_invoice_settings');
+        $invoicing = CRM_Utils_Array::value('invoicing', $invoiceSettings);
+        $totalTaxAmount = 0;
+        if (!CRM_Utils_System::isNull(CRM_Utils_Array::value('line_items', $form->_values))) {
+          $lineItem[] = $form->_values['line_items'];
+          foreach ($form->_values['line_items'] as $key => $value) {
+            $totalTaxAmount = $value['tax_amount'] + $totalTaxAmount;
+          }
         }
       }
+      $form->_id = $oldID;
       if ($invoicing) {
         $form->assign('totalTaxAmount', $totalTaxAmount);
       }
