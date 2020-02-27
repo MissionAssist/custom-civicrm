@@ -1025,20 +1025,23 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
           $additionalParticipantDetails = CRM_Event_BAO_Participant::getFeeDetails($additionalIds,
             $hasLineItems
           );
+          // Allow for multiple participants registered here.
+          $participants = [];
+          $participants += [$this->_id];
+          $participants += $additionalIds;
+          $totalAmount = 0;
+          foreach ($participants as $ID) {
+            // Loop through all participants.
+            $participantBAO = new CRM_Event_BAO_Participant();
+            $participantBAO->id = $ID;
+            $participantBAO->find(TRUE);
+            $totalAmount += $participantBAO->fee_amount;
+          }
+          $contributionParams['total_amount'] = $totalAmount;
+          $isPrimary = TRUE;
+        } else {
+          $isPrimary = FALSE;
         }
-        // Allow for multiple participants registered here.
-        $participants = [];
-        $participants += [$this->_id];
-        $participants += $additionalIds;
-        $totalAmount = 0;
-        foreach ($participants as $ID) {
-          // Loop through all participants.
-          $participantBAO = new CRM_Event_BAO_Participant();
-          $participantBAO->id = $ID;
-          $participantBAO->find(TRUE);
-          $totalAmount += $participantBAO->fee_amount;
-        }
-        $contributionParams['total_amount'] = $totalAmount;
       }
       else {
 
@@ -1229,7 +1232,6 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
     if (($this->_lineItem || !isset($params['proceSetId'])) && !$this->_paymentId && $this->_id) {
       CRM_Price_BAO_LineItem::deleteLineItems($this->_id, 'civicrm_participant');
     }
-
     if ($this->_mode) {
       // add all the additional payment params we need
       $this->_params = $this->prepareParamsForPaymentProcessor($this->_params);
@@ -1606,8 +1608,23 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
           // balance amount
           $balanceAmount = $contributionParams['partial_payment_total'] - $contributionParams['partial_amount_to_pay'];
           $this->assign('balanceAmount', $balanceAmount);
+        } else {
+          // Get the contribution ID
+          $contributionId = NULL;
+          foreach ($lineItem as $line) {
+            foreach($line as $item) {
+              if(in_array('contribution_id', $item)) {
+                $contributionId = $item['contribution_id'];
+              }
+            }
+          }
+          if ($contributionId && $isPrimary) {
+            $balanceAmount = CRM_Contribute_BAO_Contribution::getContributionBalance($contributionId, $totalAmount);
+            $this->assign('balanceAmount', $balanceAmount);
+            $this->assign('paid', $totalAmount - $balanceAmount);  // What has been paid so far.
+          }
         }
-        $this->assign('isPrimary', 1);
+        $this->assign('isPrimary', $isPrimary);
         $this->assign('checkNumber', CRM_Utils_Array::value('check_number', $params));
       }
       if ($this->_mode) {
