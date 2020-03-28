@@ -64,6 +64,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
     'participant_status',
     'participant_role',
     'participant_campaign_id',
+      // MissionAssist Specific
     'balance',
     'line_total',
     'paid',
@@ -423,6 +424,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
       if (CRM_Event_BAO_Event::usesPriceSet($row['event_id'])) {
         // add line item details if applicable
         $lineItems[$row['participant_id']] = CRM_Price_BAO_LineItem::getLineItems($row['participant_id']);
+        //MissionAssist specific
         $row = self::getPaymentStatus($row);
       }
 
@@ -446,6 +448,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
    *
    * This gets the payment status and appends it to the row
    * In other words, the what they have paid and the amount owing (balance_.
+   * MissionAsssist specific
    */
   public function getPaymentStatus($row)
   {
@@ -553,6 +556,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
           'sort' => 'participant_fee_amount',
           'direction' => CRM_Utils_Sort::DONTCARE,
         ],
+          //MissionAssist Specific
         [
           'name' => ts('Paid'),
           'sort' => 'paid',

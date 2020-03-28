@@ -1599,7 +1599,8 @@ class CRM_Report_Form extends CRM_Core_Form {
 
     $this->assign('instanceForm', $this->_instanceForm);
 
-    // CRM-19330 - check that the user has Edit permissions
+    //  MissionAssist specific
+    //  CRM-19330 - check that the user has Edit permissions
     // getPermission() simply returns CRM_Core_Permission::EDIT.
     $permission = CRM_Core_Permission::check(CRM_Core_Permission::EDIT);
     if ($permission  &&
@@ -2546,6 +2547,23 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     else {
       $row[$fieldname . '_link'] = CRM_Utils_System::url("civicrm/contact/view", 'reset=1&cid=' . $value, $this->_absoluteUrl);
     }
+    return $value;
+  }
+
+  /**
+   * @param $value
+   * @param $row
+   * @param $fieldname
+   *
+   * @return mixed
+   */
+  protected function alterCommunicationtMethod($value, &$row, $fieldname) {
+    $communicationMethods = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'preferred_communication_method');
+
+    // Explode padded values.
+    $values = CRM_utils_array::explodePadded($value);
+    // Flip values, compute intersection with $communicationMethods, and implode with commas.
+    $value = implode(', ', array_intersect_key($communicationMethods, array_flip($values)));
     return $value;
   }
 
@@ -5464,6 +5482,15 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
         'is_group_bys' => TRUE,
         'is_order_bys' => TRUE,
       ],
+      $options['prefix'] . 'preferred_communication_method' => [
+        'title' => $options['prefix_label'] . ts('Preferred Communication Method'),
+        'alter_display' => 'alterCommunicationtMethod',
+        'name' => 'preferred_communication_method',
+        'is_fields' => TRUE,
+        'is_filters' => FALSE,
+        'is_group_bys' => FALSE,
+        'is_order_bys' => FALSE,
+      ],
     ];
     foreach ([
       'postal_greeting_display' => 'Postal Greeting',
@@ -5698,7 +5725,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
       $options['prefix'] . 'postal_code' => [
         'title' => $options['prefix_label'] . ts('Postal Code'),
         'name' => 'postal_code',
-        'type' => 1,
+        'type' => 2,
         'is_fields' => TRUE,
         'is_filters' => TRUE,
         'is_group_bys' => TRUE,

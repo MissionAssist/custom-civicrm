@@ -133,7 +133,6 @@ class CRM_Event_Form_ParticipantView extends CRM_Core_Form {
       }
       // Calculate the total amount for this participant.
 
-      //$lineItem = CRM_Price_BAO_LineItem::getLineItems($participantID);
       if (!CRM_Utils_System::isNull($lineItem)) {
         $values[$participantID]['lineItem'][] = $lineItem;
       }
@@ -153,6 +152,10 @@ class CRM_Event_Form_ParticipantView extends CRM_Core_Form {
        $values[$participantID]['registered_by_display_name'] = CRM_Contact_BAO_Contact::displayName($values[$participantID]['registered_by_contact_id']);
     }
 
+    // Check if this is a primaryParticipant (registered for others) and retrieve additional participants if true  (CRM-4859)
+    if (CRM_Event_BAO_Participant::isPrimaryParticipant($participantID)) {
+      $values[$participantID]['additionalParticipants'] = CRM_Event_BAO_Participant::getAdditionalParticipants($participantID);
+    }
 
     // get the option value for custom data type
     $customDataType = CRM_Core_OptionGroup::values('custom_data_type', FALSE, FALSE, FALSE, NULL, 'name');

@@ -68,13 +68,14 @@ class CRM_Event_Form_EventFees {
     }
 
     if ($form->_pId) {
+      // MA specific
       // Get defaults for all participants registered by this one
       $participants = [];
       $participants = [$form->_pId];
       $participants += CRM_Event_BAO_Participant::getAdditionalParticipantIDs($form->_pId);
       foreach ($participants as $pId) {
+      $params = ['id' => $pId];
         $ids = [];
-        $params = ['id' => $pId];
         CRM_Event_BAO_Participant::getValues($params, $defaults, $ids);
       }
       if ($form->_action == CRM_Core_Action::UPDATE) {
@@ -192,6 +193,7 @@ class CRM_Event_Form_EventFees {
           }
         }
       }
+      // MissionAssist specific
       // Get data for secondary participants.
       $totalAmount = 0;
       foreach ($participants as $pId) {
