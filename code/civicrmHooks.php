@@ -40,7 +40,12 @@ function joomla_civicrm_tokens(&$tokens) {
   foreach($location_types['values'] as $key => $value) {
     $tokens['Email']['Email.'. $value['display_name']] = $value['description']; 
   };
-
+  $tokens['CMSData'] = array(
+      'CMSData.ID_HTML' => 'CMS ID in HTML format',
+      'CMSData.ID_Text' => 'CMS ID in text format',
+      'CMSData.Username_HTML' => 'CMS Username in HTML format',
+      'CMSData.Username_Text' => 'CMS Username in text format',
+  );
 }
 /*
   * This function is called at various times, many times.  If no tokens are
@@ -315,7 +320,7 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
             }
         }
     }
-    if (is_array($tokens['Email'])) {
+    if (isset($tokens['Email']) && is_array($tokens['Email'])) {
       //$values[$contactID]['Contact.' .$token] = "";
       foreach($tokens['Email'] as $token => $value)
       {
@@ -327,6 +332,17 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
         
       }
     }
+   if (is_array($tokens['CMSData'])) {
+      foreach($tokens['CMSData'] as $token => $value)
+      {
+            $CMSUserlist = get_values_for_CMSUser($cids, $token);
+            foreach($cids as $cidvalue => $contactID) {
+              $values[$contactID]['CMSData.'.$token] = $CMSUserlist[$contactID];
+            }
+
+    }
+    
+  }
 }
 function get_group_data_html($cids,  $status)
 {
@@ -619,4 +635,46 @@ function get_values_for_groups($cids, $status="Added")
   return $grouplist;
 
 }
+function get_values_for_CMSUser($cids, $token)
+{
+    $config = $config = CRM_Core_Config::singleton();
+    $isDrupal = $config->userSystem->is_drupal;
+    $isJoomla = ucfirst($config->userFramework) == 'Joomla' ? TRUE : FALSE;
+    $isWordPress = $config->userFramework == 'WordPress' ? TRUE : FALSE;
+    if($isJoomla) {
+      $config_file = JPATH_ROOT . DIRECTORY_SEPARATOR .'configuration.php';
+      include_once($config_file);
+      $CMSConfig = new JConfig;
+      $dbprefix = $CMSConfig->dbprefix;
+      $CMSUsertable = $dbprefix . 'users';
+      $CMSField =strtolower(explode("_", $token)[0]);
+      $select = 'SELECT '. $CMSField. ' FROM '.$CMSUsertable;
+    }
+    $CMSUserlist = array();
+    foreach($cids as $contactID) 
+    {
+      // Get the CMS ID of the user
+        $uFMatchs = \Civi\Api4\UFMatch::get()
+          ->addSelect('uf_id')
+          ->addWhere('contact_id', '=', $contactID)
+          ->execute();
 
+        $ufMatch = $uFMatchs[0];
+        $uf_id = $ufMatch['uf_id'];
+        // Now look up the user name
+        if ($uf_id) {
+          $sql = $select.' WHERE id = '.$uf_id;
+          $query = \CRM_Core_DAO::executeQuery($sql);
+          while ($query->fetch()) {
+            $value = $query->$CMSField;
+          }
+        } else {
+          $value = 'You don\'t have a web site logon';
+        }       
+        $CMSUserlist[$contactID] = $value;
+ 
+    }
+      return $CMSUserlist;
+  }
+
+            
