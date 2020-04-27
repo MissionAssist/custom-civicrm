@@ -202,7 +202,7 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
           }
       }
     }
-    if (is_array($tokens['Skill']))
+    if (array_key_exists('Skill', $tokens))
     {
         /*
          * If we have tokens associated with skills, so loop through them.
@@ -291,7 +291,7 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
 
     }
 
-    if (is_array($tokens['Group']))
+    if (array_key_exists('Group', $tokens))
     {
         /*
          * Get details of groups to which contacts belong.
@@ -654,14 +654,15 @@ function get_values_for_CMSUser($cids, $token)
     foreach($cids as $contactID) 
     {
       // Get the CMS ID of the user
-        $uFMatchs = \Civi\Api4\UFMatch::get()
-          ->addSelect('uf_id')
-          ->addWhere('contact_id', '=', $contactID)
-          ->execute();
-
-        $ufMatch = $uFMatchs[0];
-        $uf_id = $ufMatch['uf_id'];
-        // Now look up the user name
+      $result = civicrm_api3('UFMatch', 'get', [
+       'sequential' => 1,
+       'return' => ["uf_id"],
+       'contact_id' => $contactID,
+      ]);
+      foreach($result['values'] as $value) {
+        $uf_id = $value["uf_id"];
+      }
+       // Now look up the user name
         if ($uf_id) {
           $sql = $select.' WHERE id = '.$uf_id;
           $query = \CRM_Core_DAO::executeQuery($sql);
@@ -672,9 +673,8 @@ function get_values_for_CMSUser($cids, $token)
           $value = 'You don\'t have a web site logon';
         }       
         $CMSUserlist[$contactID] = $value;
- 
     }
-      return $CMSUserlist;
+    return $CMSUserlist;
   }
 
             
