@@ -332,7 +332,7 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
         
       }
     }
-   if (is_array($tokens['CMSData'])) {
+   if (array_key_exists('CMSData', $tokens)) {
       foreach($tokens['CMSData'] as $token => $value)
       {
             $CMSUserlist = get_values_for_CMSUser($cids, $token);
@@ -651,6 +651,7 @@ function get_values_for_CMSUser($cids, $token)
       $select = 'SELECT '. $CMSField. ' FROM '.$CMSUsertable;
     }
     $CMSUserlist = array();
+    $uf_id = 0; // make sure it is defined
     foreach($cids as $contactID) 
     {
       // Get the CMS ID of the user
