@@ -388,6 +388,13 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance {
       // CRM-19330 Remove the options to save or save a copy.
       unset($actions['report_instance.save']);
       unset($actions['report_instance.copy']);
+      if (CRM_Core_Config::singleton()->userFrameworkFrontend) {
+        // remove the remaining actions if an non-privileged user is accessing
+        // the front end.  The actions we removed did not work anyway.
+        foreach($actions as $key => $value) {
+          unset($actions[$key]);
+        }
+      }
     }
     return $actions;
   }
