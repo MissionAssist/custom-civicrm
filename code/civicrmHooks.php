@@ -4,7 +4,7 @@
  * 
  * Allow relationship data to be included in mailings
  * 
- * Tested with CiviCRM 5.19.2
+ * Tested with CiviCRM 5.24.6
  * 
  * This is where you put all the hook functions for CiviCRM under Joomla.  Hooks are a way
  * of intercepting actions in CiviCRM and doing custom things.
@@ -335,10 +335,10 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
    if (array_key_exists('CMSData', $tokens)) {
       foreach($tokens['CMSData'] as $token => $value)
       {
-            $CMSUserlist = get_values_for_CMSUser($cids, $token);
-            foreach($cids as $cidvalue => $contactID) {
-              $values[$contactID]['CMSData.'.$token] = $CMSUserlist[$contactID];
-            }
+        $CMSUserlist = get_values_for_CMSUser($cids, $token);
+        foreach($cids as $cidvalue => $contactID) {
+          $values[$contactID]['CMSData.'.$token] = $CMSUserlist[$contactID];
+        }
 
     }
     
@@ -651,9 +651,9 @@ function get_values_for_CMSUser($cids, $token)
       $select = 'SELECT '. $CMSField. ' FROM '.$CMSUsertable;
     }
     $CMSUserlist = array();
-    $uf_id = 0; // make sure it is defined
     foreach($cids as $contactID) 
     {
+      $uf_id = 0; // make sure it is defined
       // Get the CMS ID of the user
       $result = civicrm_api3('UFMatch', 'get', [
        'sequential' => 1,
@@ -671,7 +671,7 @@ function get_values_for_CMSUser($cids, $token)
             $value = $query->$CMSField;
           }
         } else {
-          $value = 'You don\'t have a web site logon';
+          $value = 'We can\'t find your web site logon';
         }       
         $CMSUserlist[$contactID] = $value;
     }
