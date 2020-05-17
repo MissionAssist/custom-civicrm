@@ -50,7 +50,7 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance {
       $params['is_reserved'] = CRM_Utils_Array::value('is_reserved', $params, FALSE);
       $params['domain_id'] = CRM_Utils_Array::value('domain_id', $params, CRM_Core_Config::domainID());
       // CRM-17256 set created_id on report creation.
-      $params['created_id'] = isset($params['created_id']) ? $params['created_id'] : CRM_Core_Session::getLoggedInContactID();
+      $params['created_id'] = $params['created_id'] ?? CRM_Core_Session::getLoggedInContactID();
     }
 
     if ($instanceID) {
@@ -114,10 +114,10 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance {
    */
   public static function &create(&$params) {
     if (isset($params['report_header'])) {
-      $params['header'] = CRM_Utils_Array::value('report_header', $params);
+      $params['header'] = $params['report_header'] ?? NULL;
     }
     if (isset($params['report_footer'])) {
-      $params['footer'] = CRM_Utils_Array::value('report_footer', $params);
+      $params['footer'] = $params['report_footer'] ?? NULL;
     }
 
     // build navigation parameters
@@ -131,8 +131,8 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance {
       $navigationParams['label'] = $params['title'];
       $navigationParams['name'] = $params['title'];
 
-      $navigationParams['current_parent_id'] = CRM_Utils_Array::value('parent_id', $navigationParams);
-      $navigationParams['parent_id'] = CRM_Utils_Array::value('parent_id', $params);
+      $navigationParams['current_parent_id'] = $navigationParams['parent_id'] ?? NULL;
+      $navigationParams['parent_id'] = $params['parent_id'] ?? NULL;
       $navigationParams['is_active'] = 1;
 
       if ($permission = CRM_Utils_Array::value('permission', $params)) {
@@ -144,7 +144,7 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance {
       unset($params['is_navigation']);
     }
 
-    $viewMode = !empty($params['view_mode']) ? $params['view_mode'] : FALSE;
+    $viewMode = !empty($params['view_mode']);
     if ($viewMode) {
       // Do not save to the DB - it's saved in the url.
       unset($params['view_mode']);
@@ -386,15 +386,11 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance {
     }
     else {
       // CRM-19330 Remove the options to save or save a copy.
-      unset($actions['report_instance.save']);
-      unset($actions['report_instance.copy']);
-      if (CRM_Core_Config::singleton()->userFrameworkFrontend) {
-        // remove the remaining actions if an non-privileged user is accessing
-        // the front end.  The actions we removed did not work anyway.
+      // remove the remaining actions if an non-privileged user
+      // The actions we removed did not work anyway.
         foreach($actions as $key => $value) {
           unset($actions[$key]);
         }
-      }
     }
     return $actions;
   }
