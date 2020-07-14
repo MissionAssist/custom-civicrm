@@ -24,6 +24,7 @@ class CRM_Logging_Schema {
   const ENGINE = 'InnoDB';
 
   private $logs = [];
+  private $log_views = [];
   private $tables = [];
 
   private $db;
@@ -161,7 +162,19 @@ AND    TABLE_NAME LIKE 'civicrm_%'
       $this->useDBPrefix = FALSE;
     }
     $this->db = $dsn['database'];
-
+    // First fetch the log views:
+    $dao = CRM_Core_DAO::executeQuery("
+  SELECT TABLE_NAME
+  FROM   INFORMATION_SCHEMA.TABLES
+  WHERE  TABLE_SCHEMA = '{$this->db}'
+  AND    TABLE_TYPE = 'VIEW'
+  AND    (TABLE_NAME LIKE 'log_civicrm_%' $nonStandardTableNameString )
+  ");
+      while ($dao->fetch()) {
+        $log_view = $dao->TABLE_NAME;
+        $this->log_views[substr($log_view, 4)] = $log_view;
+    }
+  // Now fetch the tables
     $dao = CRM_Core_DAO::executeQuery("
 SELECT TABLE_NAME
 FROM   INFORMATION_SCHEMA.TABLES
@@ -214,7 +227,8 @@ AND    (TABLE_NAME LIKE 'log_civicrm_%' $nonStandardTableNameString )
 
     // invoke the meta trigger creation call
     CRM_Core_DAO::triggerRebuild();
-
+    // Drop tables and views
+    $this->dropAllLogTables();
     $this->deleteReports();
   }
 
@@ -461,8 +475,15 @@ AND    (TABLE_NAME LIKE 'log_civicrm_%' $nonStandardTableNameString )
         CRM_Core_DAO::executeQuery("ALTER TABLE `{$this->db}`.log_$table MODIFY {$line}", [], TRUE, NULL, FALSE, FALSE);
       }
     }
+    // Todo create or modify view here.
+    $log_table = "log_$table";
+    $this->resetSchemaCacheForTable($log_table);
 
-    $this->resetSchemaCacheForTable("log_$table");
+    $this->logs[$table] =  $log_table ;
+    $columns = implode(', ', $this->columnsOf($table));
+    // Now create the view.
+    $this->createViewFor($log_table, $columns);
+  
 
     return TRUE;
   }
@@ -829,21 +850,34 @@ COLS;
     $log_table = "log_$table";
     $this->logs[$table] =  $log_table ;
     // Now create the view.
+    $this->createViewFor($log_table, $columns);
+  }
+ /**
+   * Create views for the table if there is a locale in the field name
+   * for each locale 
+   *
+   * @param string $log_table
+   *        array  $columns
+   */
+  public function createViewFor($log_table, $columns) {
     $domain = new CRM_Core_DAO_Domain();
     $domain->find(TRUE);
     $locales = explode(CRM_Core_DAO::VALUE_SEPARATOR, $domain->locales);
-    $the_dao = new CRM_Core_DAO();
-        // rebuild views
-    foreach ($locales as $locale) {
-            // Now check if we need to make any views
+    $dao = new CRM_Core_DAO();
 
+    foreach ($locales as $locale) {
+      // Now check if we need to make any views.
+      // We need to make a view if one of the fields contains the locale string.
+      if (strpos($columns, $locale) != FALSE) {
+        $dao->query("DROP VIEW IF EXISTS ".$log_table."_$locale"); // delete the view
         $queries[] = CRM_Core_I18n_Schema::createViewQuery($locale, $log_table, $dao);
         foreach ($queries as $query) {
-           $dao->query($query, FALSE);       
+           $dao->query($query, FALSE);
+           $this->log_views[substr($log_table, 4)] = $log_table . "_$locale"; 
         }
+      }
     }
   }
-
   /**
    * Delete reports.
    */
@@ -889,8 +923,13 @@ COLS;
    */
   public function dropAllLogTables() {
     if ($this->tablesExist()) {
-      foreach ($this->logs as $log_table) {
-        CRM_Core_DAO::executeQuery("DROP TABLE $log_table");
+      foreach ($this->log_views as $log_view) {
+        CRM_Core_DAO::executeQuery($query = "DROP VIEW $log_view",NULL, NULL, NULL, NULL, FALSE);
+      }
+      foreach ($this->logs as $table => $log_table) {
+        $this->dropTriggers($log_table); // Drop the triggers before the table.
+        CRM_Core_DAO::executeQuery("DROP TABLE $log_table",NULL,  NULL, NULL, NULL, FALSE); 
+        unset($this->logs[$table]);  // forget the table now we have deleted it.
       }
     }
   }
