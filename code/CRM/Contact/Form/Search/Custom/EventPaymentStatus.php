@@ -218,14 +218,14 @@ implements CRM_Contact_Form_Search_Interface {
 
         if ( ! empty( $sort ) ) {
             if ( is_string( $sort ) ) {
-                $sql .= " ORDER BY $sort ";
+                $orderBy = " ORDER BY $sort ";
             } else {
-                $sql .= " ORDER BY " . trim( $sort->orderBy() );
+                $orderBy = " ORDER BY " . trim( $sort->orderBy() );
             }
         } else {
-            $sql .= "ORDER BY e.id desc, c.last_name asc, c.first_name asc";
+            $orderBy = "ORDER BY e.id desc, c.last_name asc, c.first_name asc";
         }
-        
+        $sql .= $orderBy;
         if ( $rowcount > 0 && $offset >= 0 ) {
             $sql .= " LIMIT $offset, $rowcount ";
         }
