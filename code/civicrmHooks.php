@@ -1,10 +1,10 @@
 <?php
 /**
- * Copyright (C) 2018 MissionAssist GPL2 license
+ * Copyright (C) 2020 MissionAssist GPL2 license
  * 
  * Allow relationship data to be included in mailings
  * 
- * Tested with CiviCRM 5.24.6
+ * Tested with CiviCRM 5.30.`
  * 
  * This is where you put all the hook functions for CiviCRM under Joomla.  Hooks are a way
  * of intercepting actions in CiviCRM and doing custom things.
@@ -46,6 +46,18 @@ function joomla_civicrm_tokens(&$tokens) {
       'CMSData.Username_HTML' => 'CMS Username in HTML format',
       'CMSData.Username_Text' => 'CMS Username in text format',
   );
+  $tokens['Phone'] = array(
+      'Phone.Primary' => 'Primary',
+  );
+  // Get the phone types
+  $optionValues = \Civi\Api4\OptionValue::get()
+  ->addSelect('name')
+  ->addWhere('option_group_id:name', '=', 'phone_type')
+  ->execute();       
+  foreach ($optionValues as $optionValue) {
+     $tokens['Phone']['Phone.'.$optionValue['name']] = $optionValue['name'];
+  }
+  
 }
 /*
   * This function is called at various times, many times.  If no tokens are
@@ -332,7 +344,7 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
         
       }
     }
-   if (array_key_exists('CMSData', $tokens)) {
+    if (array_key_exists('CMSData', $tokens)) {
       foreach($tokens['CMSData'] as $token => $value)
       {
         $CMSUserlist = get_values_for_CMSUser($cids, $token);
@@ -340,9 +352,16 @@ function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens
           $values[$contactID]['CMSData.'.$token] = $CMSUserlist[$contactID];
         }
 
+      }
     }
-    
-  }
+    if (array_key_exists('Phone', $tokens)) {
+      foreach($tokens['Phone'] as $token => $value) {
+        $Phonelist = get_values_for_phone($cids, $token);
+        foreach($cids as $cidvalue => $contactID) {
+          $values[$contactID]['Phone.'.$token] = $Phonelist[$contactID];
+        }
+      }
+    }
 }
 function get_group_data_html($cids,  $status)
 {
@@ -676,6 +695,40 @@ function get_values_for_CMSUser($cids, $token)
         $CMSUserlist[$contactID] = $value;
     }
     return $CMSUserlist;
+  }
+  function get_values_for_phone($cids, $token)
+{
+    /*
+     * This is where we get the list of phones
+     *
+    */
+    /*
+     * Now get a list of phones
+     */
+      foreach($cids as $contactID) {
+
+        if ($token == 'Primary') {
+          $phones = \Civi\Api4\Phone::get()
+            ->addSelect('phone', 'phone_type_id:label', 'contact_id')
+            ->addWhere('contact_id', '=', $contactID)
+            ->addWhere('is_primary', '=', TRUE)
+            ->execute();
+        } else {
+          $phones = \Civi\Api4\Phone::get()
+            ->addSelect('phone', 'phone_type_id:label', 'contact_id')
+            ->addWhere('contact_id', '=', $contactID)
+            ->addWhere('phone_type_id:name', '=', $token)
+            ->execute();
+          }
+          
+        foreach($phones as $phone) {
+          $list[$phone['contact_id']] = "";
+          $spacer[$phone['contact_id']] = "";
+          $list[$phone['contact_id']] .= $spacer[$phone['contact_id']] . $phone['phone'] . ' (' . $phone['phone_type_id:label']. ')' ;
+          $spacer[$phone['contact_id']] = ", ";
+        }
+      }
+      return $list;
   }
 
             
