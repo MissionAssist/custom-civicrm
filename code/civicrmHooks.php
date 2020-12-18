@@ -4,10 +4,22 @@
  * 
  * Allow relationship data to be included in mailings
  * 
- * Tested with CiviCRM 5.30.`
+ * Tested with CiviCRM 5.32.1`
  * 
  * This is where you put all the hook functions for CiviCRM under Joomla.  Hooks are a way
  * of intercepting actions in CiviCRM and doing custom things.
+ */
+
+
+function joomla_civicrm_tokens(&$tokens) {
+  return hook_civicrm_tokens($tokens);
+};
+function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens = array(), $context = NULL) {
+  return hook_civicrm_tokenValues($values, $cids, $job, $passed_tokens, $context);
+}
+/**
+ * Here are the main hook functions, changed so they work with Drupal as well
+ * 
  */
 /**
  *  This function creates custom mailing tokens in CiviCRM.  It allows us to*
@@ -15,13 +27,11 @@
  *
  *
  */
-
-function joomla_civicrm_tokens(&$tokens) {
+function hook_civicrm_tokens(&$tokens) {
   $tokens['Relationship'] = array(
     'Relationship.relationships_HTML' => 'List of relationships in HTML format',
     'Relationship.relationships_Text' => 'List of relationships in text format',
   );
-
   $tokens['Skill'] = array(
     'Skill.skills_HTML' => 'List of skills in HTML format',
     'Skill.skills_Text' => 'List of skills in text format',
@@ -63,7 +73,8 @@ function joomla_civicrm_tokens(&$tokens) {
   * This function is called at various times, many times.  If no tokens are
   * being passed to the function, we should do no more.
   */
-function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens = array(), $context = NULL) {
+
+function hook_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens = [], $context = NULL) {
   if ($passed_tokens == NULL)
     {
  
