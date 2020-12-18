@@ -12,10 +12,10 @@
 
 
 function joomla_civicrm_tokens(&$tokens) {
-  hook_civicrm_tokens(&$tokens);
+  return hook_civicrm_tokens($tokens);
 };
 function joomla_civicrm_tokenValues(&$values, $cids, $job = NULL, $passed_tokens = array(), $context = NULL) {
-  hook_civicrm_tokenValues(&$values, $cids, $job, $passed_tokens, $context);
+  return hook_civicrm_tokenValues($values, $cids, $job, $passed_tokens, $context);
 }
 /**
  * Here are the main hook functions, changed so they work with Drupal as well
