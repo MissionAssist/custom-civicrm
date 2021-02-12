@@ -843,7 +843,7 @@ WHERE  civicrm_participant.id = {$participantId}
     if (!$participant->find()) {
       return FALSE;
     }
-    CRM_Utils_Hook::pre('delete', 'Participant', $id, CRM_Core_DAO::$_nullArray);
+    CRM_Utils_Hook::pre('delete', 'Participant', $id);
 
     $transaction = new CRM_Core_Transaction();
 
@@ -1055,82 +1055,6 @@ WHERE cpf.price_set_id = %1 AND cpfv.label LIKE %2";
       $params[2] = [$feeLevel, 'String'];
     }
     return CRM_Core_DAO::singleValueQuery($query, $params);
-  }
-
-  /**
-   * Get the event fee info for given participant ids
-   * either from line item table / participant table.
-   *
-   * @param array $participantIds
-   *   Participant ids.
-   * @param bool $hasLineItems
-   *   Do fetch from line items.
-   *
-   * @return array
-   */
-  public function getFeeDetails($participantIds, $hasLineItems = FALSE) {
-    $feeDetails = [];
-    if (!is_array($participantIds) || empty($participantIds)) {
-      return $feeDetails;
-    }
-
-    $select = '
-SELECT  participant.id         as id,
-        participant.fee_level  as fee_level,
-        participant.fee_amount as fee_amount';
-    $from = 'FROM civicrm_participant participant';
-    if ($hasLineItems) {
-      $select .= ' ,
-lineItem.id          as lineId,
-lineItem.label       as label,
-lineItem.qty         as qty,
-lineItem.unit_price  as unit_price,
-lineItem.line_total  as line_total,
-field.label          as field_title,
-field.html_type      as html_type,
-field.id             as price_field_id,
-value.id             as price_field_value_id,
-value.description    as description,
-IF( value.count, value.count, 0 ) as participant_count';
-      $from .= "
-INNER JOIN civicrm_line_item lineItem      ON ( lineItem.entity_table = 'civicrm_participant'
-                                                AND lineItem.entity_id = participant.id )
-INNER JOIN civicrm_price_field field ON ( field.id = lineItem.price_field_id )
-INNER JOIN civicrm_price_field_value value ON ( value.id = lineItem.price_field_value_id )
-";
-    }
-    $where = 'WHERE participant.id IN ( ' . implode(', ', $participantIds) . ' )';
-    $query = "$select $from  $where";
-
-    $feeInfo = CRM_Core_DAO::executeQuery($query);
-    $feeProperties = ['fee_level', 'fee_amount'];
-    $lineProperties = [
-      'lineId',
-      'label',
-      'qty',
-      'unit_price',
-      'line_total',
-      'field_title',
-      'html_type',
-      'price_field_id',
-      'participant_count',
-      'price_field_value_id',
-      'description',
-    ];
-    while ($feeInfo->fetch()) {
-      if ($hasLineItems) {
-        foreach ($lineProperties as $property) {
-          $feeDetails[$feeInfo->id][$feeInfo->lineId][$property] = $feeInfo->$property;
-        }
-      }
-      else {
-        foreach ($feeProperties as $property) {
-          $feeDetails[$feeInfo->id][$property] = $feeInfo->$property;
-      }
-    }
-    }
-
-    return $feeDetails;
   }
 
   /**
@@ -2017,7 +1941,7 @@ WHERE    civicrm_participant.contact_id = {$contactID} AND
       $start_date = $dao->start;
     }
     $timenow = new Datetime();
-    if (!$isBackOffice && !empty($time_limit)) {
+    if (!$isBackOffice && isset($time_limit)) {
       $cancelHours = abs($time_limit);
       $cancelInterval = new DateInterval("PT${cancelHours}H");
       $cancelInterval->invert = $time_limit < 0 ? 1 : 0;
@@ -2025,9 +1949,9 @@ WHERE    civicrm_participant.contact_id = {$contactID} AND
       if ($timenow > $cancelDeadline) {
         $details['eligible'] = FALSE;
         // Change the language of the status message based on whether the waitlist time limit is positive or negative.
-        $afterOrPrior = $time_limit < 0 ? 'after' : 'prior';
-        $moreOrLess = $time_limit < 0 ? 'more' : 'less';
-        $details['ineligible_message'] = ts("Registration for this event cannot be cancelled or transferred %1 than %2 hours %3 to the event's start time. Contact the event organizer if you have questions.",
+        $afterOrPrior = $time_limit <= 0 ? 'after' : 'prior to';
+        $moreOrLess = $time_limit <= 0 ? 'more' : 'fewer';
+        $details['ineligible_message'] = ts("Registration for this event cannot be cancelled or transferred %1 than %2 hours %3 the event's start time. Contact the event organizer if you have questions.",
         [1 => $moreOrLess, 2 => $cancelHours, 3 => $afterOrPrior]);
 
     }
