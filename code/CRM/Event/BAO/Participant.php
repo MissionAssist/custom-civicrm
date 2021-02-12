@@ -1068,7 +1068,7 @@ WHERE cpf.price_set_id = %1 AND cpfv.label LIKE %2";
    *
    * @return array
    */
-  public function getFeeDetails($participantIds, $hasLineItems = FALSE) {
+  public static function getFeeDetails($participantIds, $hasLineItems = FALSE) {
     $feeDetails = [];
     if (!is_array($participantIds) || empty($participantIds)) {
       return $feeDetails;
