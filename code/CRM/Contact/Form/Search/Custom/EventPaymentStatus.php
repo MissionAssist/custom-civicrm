@@ -147,20 +147,20 @@ implements CRM_Contact_Form_Search_Interface {
         //$paymentInfo = CRM_Contribute_BAO_Contribution::getPaymentInfo($participantID, 'event', FALSE, TRUE);
         if ($justIDs)
         {
-            // Just return the contact ID
-            $select  = " c.id as contact_id ";
+            // Just return the contact ID and sort name as they are needed for page displays,
+            $select  = "contact_a.id as contact_id ";
         }
         else
         {
             
-        $select  = "
-            c.id contact_id,
+          $select  = "
+            contact_a.id contact_id,
             e.title event_name,
             (SELECT ov.name FROM civicrm_option_value  ov where ov.option_group_id = (select id from civicrm_option_group og where og.name = 'event_type') and ov.value = e.event_type_id) event_type,
             p.id participant_id,
-            c.first_name first_name,
-            c.last_name last_name,
-            c.is_deleted deleted,
+           contact_a.first_name first_name,
+           contact_a.last_name last_name,
+           contact_a.is_deleted deleted,
             st.name status,
             p.register_date register_date,
             li.label fee_level,
@@ -176,30 +176,28 @@ implements CRM_Contact_Form_Search_Interface {
                 - if(p.registered_by_id is null, ifnull(sum(ft.total_amount), 0), 0)  balance,
             note.note note
                 ";
-            
-        }      		
-        $from  = $this->from( );
-        
-        $where = $this->where( $includeContactIDs );
-
-        if ( ! empty( $where ) ) {
-            $where = "WHERE $where";
-        }
-	
+        }   
         // add custom group fields to SELECT and FROM clause
         require_once 'CRM/Core/BAO/CustomGroup.php';
         $groupTree =& CRM_Core_BAO_CustomGroup::getTree( 'Participant', $from, null, null, '', null );
-	
+  
+        $from  = $this->from( );
+  
         foreach ($groupTree as $key) {
             if ($key['extends'] == 'Participant') {
+              if (!$justIDs) {
+                // Add custom group fields.
                 $select .= ", " . $key['table_name'] . ".*";
-                $from   .= " LEFT JOIN " . $key['table_name'] . " ON " . $key['table_name'] . ".entity_id = p.id";
+              }
+              $from   .= " LEFT JOIN " . $key['table_name'] . " ON " . $key['table_name'] . ".entity_id = p.id";
             }
         }
         // end custom groups add
+
         
-        $sql = " SELECT $select FROM   $from $where ";
-		
+        $where = $this->where( $includeContactIDs );
+
+ 
         $where = $this->where();
         if ( $where == "") (
         $where = "true = true");  // put something in the WHERE clause
@@ -207,7 +205,6 @@ implements CRM_Contact_Form_Search_Interface {
         if ( ! empty($this->_formValues['event_type_id'] ) ) {
             $groupBy = "e.id, p.id";
         }
-
         $sql = "
         SELECT $select
         FROM   $from
@@ -221,9 +218,11 @@ implements CRM_Contact_Form_Search_Interface {
                 $orderBy = " ORDER BY $sort ";
             } else {
                 $orderBy = " ORDER BY " . trim( $sort->orderBy() );
+ 
+                
             }
         } else {
-            $orderBy = "ORDER BY e.id desc, c.last_name asc, c.first_name asc";
+            $orderBy = "ORDER BY e.id desc,contact_a.last_name asc,contact_a.first_name asc";
         }
         $sql .= $orderBy;
         if ( $rowcount > 0 && $offset >= 0 ) {
@@ -240,10 +239,10 @@ implements CRM_Contact_Form_Search_Interface {
             civicrm_event e
             left join civicrm_participant p on p.event_id = e.id
             inner join civicrm_participant_status_type st on st.id = p.status_id
-            inner join civicrm_contact c on c.id = p.contact_id
+            inner join civicrm_contact contact_a on contact_a.id = p.contact_id
             left join civicrm_note note on note.entity_id = p.id and note.entity_table = 'civicrm_participant'
             left join civicrm_participant_payment pay on pay.participant_id = p.id
-            left join civicrm_contribution cont on cont.financial_type_id = e.financial_type_id and cont.contact_id = c.id and cont.id = pay.contribution_id
+            left join civicrm_contribution cont on cont.financial_type_id = e.financial_type_id and cont.contact_id = contact_a.id and cont.id = pay.contribution_id
             left join civicrm_line_item li on li.entity_id = p.id and p.registered_by_id is null 
               and li.contribution_id = cont.id and li.entity_table = 'civicrm_participant' and li.line_total != 0
             left join civicrm_entity_financial_trxn eft on eft.entity_id = cont.id and eft.entity_table = 'civicrm_contribution'
