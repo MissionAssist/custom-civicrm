@@ -150,11 +150,17 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
     $eventClause = NULL,
     $single = FALSE,
     $limit = NULL,
-    $context = 'search',
+    $context = 'participant',
     $compContext = NULL
   ) {
     // submitted form values
     $this->_queryParams = &$queryParams;
+    // Issue Event_46
+    // Force the context to be participant, as the search contact causes issues
+    // with the editing of participants.
+    if ($context == 'search') {
+      $context = 'participant';
+    }
 
     $this->_single = $single;
     $this->_limit = $limit;
