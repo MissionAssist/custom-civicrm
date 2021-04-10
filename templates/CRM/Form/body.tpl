@@ -35,7 +35,7 @@
     {/if}
 {/if}
 
-{* Add all the form elements sent in by the hook *}
+{* Add all the form elements sent in by the hook  - formerly used by civiDiscount, now deprecated*}
 {if $beginHookFormElements}
   <table class="form-layout-compressed">
   {foreach from=$beginHookFormElements key=dontCare item=hookFormElement}
