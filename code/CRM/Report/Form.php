@@ -4956,6 +4956,10 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
         'title' => ts('Do not SMS'),
         'type' => CRM_Utils_Type::T_BOOLEAN,
       ],
+      'do_not_trade' => [
+        'title' => ts('Do not Trade'),
+        'type' => CRM_Utils_Type::T_BOOLEAN,
+      ],
       'is_opt_out' => [
         'title' => ts('Do not bulk email'),
         'type' => CRM_Utils_Type::T_BOOLEAN,
