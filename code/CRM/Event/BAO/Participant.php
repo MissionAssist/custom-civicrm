@@ -656,7 +656,7 @@ INNER JOIN  civicrm_price_field field       ON ( value.price_field_id = field.id
           'contact_type' => $contactType,
           'used' => 'Unsupervised',
         ];
-        $fieldsArray = CRM_Dedupe_BAO_Rule::dedupeRuleFields($ruleParams);
+        $fieldsArray = CRM_Dedupe_BAO_DedupeRule::dedupeRuleFields($ruleParams);
 
         if (is_array($fieldsArray)) {
           foreach ($fieldsArray as $value) {
@@ -1997,7 +1997,7 @@ WHERE    civicrm_participant.contact_id = {$contactID} AND
       $eventTitle = $dao->title;
       $eventId = $dao->event_id;
 }
-    if (!$details['allow_selfcancelxfer']) {
+    if (!$details['allow_selfcancelxfer'] && !$isBackOffice) {
       $details['eligible'] = FALSE;
       $details['ineligible_message'] = ts('This event registration can not be transferred or cancelled. Contact the event organizer if you have questions.');
       return $details;

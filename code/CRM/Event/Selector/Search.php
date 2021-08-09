@@ -150,7 +150,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
     $eventClause = NULL,
     $single = FALSE,
     $limit = NULL,
-    $context = 'participant',
+    $context = 'search',
     $compContext = NULL
   ) {
     // submitted form values
