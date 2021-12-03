@@ -232,7 +232,7 @@ LIMIT 1
       'Template',
     ];
     // on create fetch statuses on basis of component
-    if (!$id) {
+    if (!$name) {
       $statusNamesToUnset = array_merge($statusNamesToUnset, [
         'Refunded',
         'Chargeback',
