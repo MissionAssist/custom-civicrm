@@ -14,6 +14,16 @@
  */
 class CRM_Report_Form extends CRM_Core_Form {
   /**
+   * Variables smarty expects to have set.
+   *
+   * We ensure these are assigned (value = NULL) when Smarty is instantiated in
+   * order to avoid e-notices / having to use empty or isset in the template layer.
+   *
+   * @var string[]
+   */
+  public $expectedSmartyVariables = ['pager', 'skip', 'sections', 'grandStat'];
+
+  /**
    * Deprecated constant, Reports should be updated to use the getRowCount function.
    */
   const ROW_COUNT_LIMIT = 50;
@@ -605,7 +615,9 @@ class CRM_Report_Form extends CRM_Core_Form {
    */
   public function preProcessCommon() {
     $this->_force = CRM_Utils_Request::retrieve('force', 'Boolean');
-
+    // Ensure smarty variables are assigned here since this function is called from
+    // the report api and the main buildForm is not.
+    self::$_template->ensureVariablesAreAssigned($this->expectedSmartyVariables);
     $this->_dashBoardRowCount = CRM_Utils_Request::retrieve('rowCount', 'Integer');
 
     $this->_section = CRM_Utils_Request::retrieve('section', 'Integer');
@@ -2472,14 +2484,14 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     if ($pager) {
       $this->setPager();
     }
-
+    $chartEnabled = !empty($this->_params['charts']) && !empty($rows);
+    $this->assign('chartEnabled', $chartEnabled);
     // allow building charts if any
-    if (!empty($this->_params['charts']) && !empty($rows)) {
+    if ($chartEnabled) {
       $this->buildChart($rows);
-      $this->assign('chartEnabled', TRUE);
       $this->_chartId = "{$this->_params['charts']}_" .
         ($this->_id ? $this->_id : substr(get_class($this), 16)) . '_' .
-        session_id();
+        CRM_Core_Config::singleton()->userSystem->getSessionId();
       $this->assign('chartId', $this->_chartId);
     }
 
@@ -2488,6 +2500,12 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       if (!empty($value['no_display'])) {
         unset($this->_columnHeaders[$key]);
       }
+      foreach (['colspan', 'type'] as $expectedKey) {
+        if (!isset($this->_columnHeaders[$key][$expectedKey])) {
+          // Ensure it is set to prevent smarty notices.
+          $this->_columnHeaders[$key][$expectedKey] = FALSE;
+    }
+      }
     }
 
     // unset columns not to be displayed.
@@ -2495,7 +2513,13 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       foreach ($this->_noDisplay as $noDisplayField) {
         foreach ($rows as $rowNum => $row) {
           unset($this->_columnHeaders[$noDisplayField]);
+          $expectedKeys = ['class'];
+          foreach ($expectedKeys as $expectedKey) {
+            if (!array_key_exists($expectedKey, $row)) {
+              $rows[$rowNum][$expectedKey] = NULL;
         }
+      }
+    }
       }
     }
 
@@ -3301,7 +3325,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
    * @param array $rows
    */
   public function doTemplateAssignment(&$rows) {
-    $this->assign_by_ref('columnHeaders', $this->_columnHeaders);
+    $this->assign('columnHeaders', $this->_columnHeaders);
     $this->assign_by_ref('rows', $rows);
     $this->assign('statistics', $this->statistics($rows));
   }
@@ -3345,12 +3369,14 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     $statistics['counts']['rowCount'] = [
       'title' => ts('Row(s) Listed'),
       'value' => $count,
+      'type' => CRM_Utils_Type::T_INT,
     ];
 
     if ($this->_rowsFound && ($this->_rowsFound > $count)) {
       $statistics['counts']['rowsFound'] = [
         'title' => ts('Total Row(s)'),
         'value' => $this->_rowsFound,
+        'type' => CRM_Utils_Type::T_INT,
       ];
     }
   }
@@ -3379,6 +3405,10 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
         'value' => implode(' & ', $combinations),
       ];
     }
+    else {
+      // prevents an e-notice in statistics.tpl.
+      $statistics['groups'] = [];
+  }
   }
 
   /**
@@ -3486,7 +3516,11 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
           }
         }
       }
+      else {
+        // Prevents an e-notice in statistics.tpl.
+        $statistics['filters'] = [];
     }
+  }
   }
 
   /**
@@ -5030,7 +5064,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
   public function setEntityRefDefaults(&$field, $table) {
     $field['attributes'] = $field['attributes'] ? $field['attributes'] : [];
     $field['attributes'] += [
-      'entity' => CRM_Core_DAO_AllCoreTables::getBriefName(CRM_Core_DAO_AllCoreTables::getClassForTable($table)),
+      'entity' => CRM_Core_DAO_AllCoreTables::getEntityNameForTable($table),
       'multiple' => TRUE,
       'placeholder' => ts('- select -'),
     ];
