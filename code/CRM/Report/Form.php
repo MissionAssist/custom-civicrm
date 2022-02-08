@@ -297,10 +297,12 @@ class CRM_Report_Form extends CRM_Core_Form {
    * @var int
    */
   protected $_offsetValue = NULL;
+
   /**
-   * @var null
+   * @var array
    */
-  protected $_sections = NULL;
+  protected $_sections = [];
+
   protected $_autoIncludeIndexedFieldsAsOrderBys = 0;
 
   /**
@@ -536,6 +538,12 @@ class CRM_Report_Form extends CRM_Core_Form {
    * @var bool
    */
   public $optimisedForOnlyFullGroupBy = TRUE;
+
+  /**
+   * Determines which chart types are supported for this report
+   * @var string[]
+   */
+  protected $_charts = [];
 
   /**
    * Get the number of rows to show
@@ -3918,7 +3926,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
   }
 
   /**
-   * Buld contact acl clause
+   * Build contact acl clause
    * @deprecated in favor of buildPermissionClause
    *
    * Note that if the buildPermissionClause function is called (which most reports do from
@@ -3931,7 +3939,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
   }
 
   /**
-   * Build the permision clause for all entities in this report
+   * Build the permission clause for all entities in this report
    */
   public function buildPermissionClause() {
     $ret = [];
@@ -5419,7 +5427,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
    */
   protected function getContactColumns($options = []) {
     $defaultOptions = [
-      'custom_fields' => ['Individual', 'Contact', 'Organization'],
+      'custom_fields' => CRM_Contact_BAO_ContactType::basicTypes(),
       'fields_defaults' => ['display_name', 'id'],
       'order_bys_defaults' => ['sort_name ASC'],
       'contact_type' => NULL,
