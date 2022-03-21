@@ -243,21 +243,23 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
   }
 
   /**
-   * Retrieve DB object and copy to defaults array.
+   * Retrieve instance.
    *
    * @param array $params
-   *   Array of criteria values.
    * @param array $defaults
-   *   Array to be populated with found values.
    *
-   * @return self|null
-   *   The DAO object, if found.
-   *
-   * @deprecated
+   * @return CRM_Report_DAO_ReportInstance|null
    */
   public static function retrieve($params, &$defaults) {
-    return self::commonRetrieve(self::class, $params, $defaults);
+    $instance = new CRM_Report_DAO_ReportInstance();
+    $instance->copyValues($params);
+
+    if ($instance->find(TRUE)) {
+      CRM_Core_DAO::storeValues($instance, $defaults);
+      return $instance;
     }
+    return NULL;
+  }
 
   /**
    * Check if report is private.
