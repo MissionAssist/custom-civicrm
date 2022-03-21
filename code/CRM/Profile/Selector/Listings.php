@@ -121,7 +121,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     $map = FALSE,
     $editLink = FALSE,
     $linkToUF = FALSE,
-    $thePage  // We get the page object so we can clear the map url if we cannot
+    $thePage = NULL // We get the page object so we can clear the map url if we cannot
               // map any contact. 
   ) {
     $this->_params = $params;
@@ -175,7 +175,10 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     //the below is done for query building for multirecord custom field listing
     //to show all the custom field multi valued records of a particular contact
     $this->setMultiRecordTableName($this->_fields);
-    $this->_page = $thePage;
+    // If we have passed the page object, then remember it.
+    if (isset($thePage)) {
+      $this->_page = $thePage;
+    }
   }
 
   /**$the
@@ -679,7 +682,9 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
           $empty = FALSE;
         }
       }
-      if ($canMap == FALSE) {
+      // If we have passed the page object and can't view the contact then
+      // clear the Map URL.
+      if (isset($this->_page) && $canMap == FALSE) {
          $thePage = $this->_page;
          $thePage->assign('mapURL',
           ""
