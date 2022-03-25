@@ -7,6 +7,7 @@
  | and copyright information, see https://civicrm.org/licensing       |
  +--------------------------------------------------------------------+
 *}
+{*debug*}
 <div class="crm-profile-name-{$ufGroupName}">
 {crmRegion name=profile-search-`$ufGroupName`}
 
@@ -40,14 +41,16 @@
     <table>
       <tr class="columnheader">
       {foreach from=$columnHeaders item=header}
-        <th scope="col">
-        {if $header.sort}
-          {assign var='key' value=$header.sort}
-          {$sort->_response.$key.link}
-        {else}
-          {$header.name}
-        {/if}
+        {if $header.field_name != 'sort_name' || $canMap}
+            <th scope="col">
+            {if $header.sort}
+              {assign var='key' value=$header.sort}
+              {$sort->_response.$key.link}
+            {else}
+              {$header.name}
+            {/if}
          </th>
+       {/if}
       {/foreach}
       </tr>
 
@@ -55,11 +58,13 @@
       {foreach from=$rows item=row name=listings}
       <tr id="row-{$smarty.foreach.listings.iteration}" class="{cycle values="odd-row,even-row"}">
       {foreach from=$row key=index item=value}
+        {if $columnHeaders.$index.field_name != 'sort_name' || $canMap}
             {if $columnHeaders.$index.field_name}
                   <td class="crm-{$columnHeaders.$index.field_name}">{$value}</td>
             {else}
               <td>{$value}</td>
             {/if}
+        {/if}
       {/foreach}
       </tr>
       {/foreach}

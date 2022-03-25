@@ -283,7 +283,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       self::$_columnHeaders = [
         ['name' => ''],
         [
-          'name' => ts('Display Name'),
+          'name' => ts('Last and First Name'),
           'sort' => 'sort_name',
           'direction' => CRM_Utils_Sort::ASCENDING,
           'field_name' => 'sort_name',
@@ -492,6 +492,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         $this->_editLink = TRUE;
       }
     }
+    $viewContacts = CRM_Core_Permission::check('view all conacts');
     $links = self::links($this->_map, $this->_editLink, $this->_linkToUF, $this->_profileIds);
 
     $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id');
@@ -593,11 +594,11 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         $row[] = "";
       }
       if ($result->sort_name) {
-        if ($canView) {
+        if ($canView && $canMap) {
           $row[] = $result->sort_name;
           $empty = FALSE;
         } else {
-          $row[] = " - ";
+          $row[] = "";
           $empty = TRUE;
         }
         
@@ -605,7 +606,6 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       else {
         continue;
       }
-
       foreach ($names as $name) {
         if ($cfID = CRM_Core_BAO_CustomField::getKeyID($name)) {
           $row[] = CRM_Core_BAO_CustomField::displayValue($result->$name,
@@ -684,11 +684,16 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       }
       // If we have passed the page object and can't view the contact then
       // clear the Map URL.
+      $thePage = $this->_page;
       if (isset($this->_page) && $canMap == FALSE) {
-         $thePage = $this->_page;
-         $thePage->assign('mapURL',
-          ""
-          );
+        $thePage->assign('mapURL',
+         ""
+         );
+        $thePage->assign('canMap',
+         FALSE);
+      } else {
+        $thePage->assign('canMap',
+        TRUE);   
       }
       $newLinks = $links;
       // MissionAssist - check on permissions and remove the map link if
@@ -737,11 +742,17 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         'Contact',
         $result->contact_id
       );
+      // If we can't view all contacts, then we don't want the link to the
+      // contact information to appear.
+      if (!$viewContacts) {
+        $row[0] = '';
+      }
 
       if (!$empty) {
         $rows[] = $row;
       }
     }
+    
     return $rows;
   }
 
