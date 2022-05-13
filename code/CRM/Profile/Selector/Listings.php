@@ -181,7 +181,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     }
   }
 
-  /**$the
+  /**
    * This method returns the links that are given for each search row.
    *
    * @param bool $map
@@ -606,6 +606,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       else {
         continue;
       }
+
       foreach ($names as $name) {
         if ($cfID = CRM_Core_BAO_CustomField::getKeyID($name)) {
           $row[] = CRM_Core_BAO_CustomField::displayValue($result->$name,

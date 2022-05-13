@@ -36,7 +36,7 @@ class CRM_Profile_Page_View extends CRM_Core_Page {
   protected $_gid;
 
   /**
-   * Should the primary email be converted into a link, if emailable.
+   * Should the primary email be converted into a link, if emailabe.
    *
    * @var bool
    */
