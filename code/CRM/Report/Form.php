@@ -2508,12 +2508,14 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       if (!empty($value['no_display'])) {
         unset($this->_columnHeaders[$key]);
       }
+      else {
       foreach (['colspan', 'type'] as $expectedKey) {
         if (!isset($this->_columnHeaders[$key][$expectedKey])) {
           // Ensure it is set to prevent smarty notices.
           $this->_columnHeaders[$key][$expectedKey] = FALSE;
     }
       }
+    }
     }
 
     // unset columns not to be displayed.
@@ -3511,7 +3513,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
                 $value = CRM_Utils_Array::value($op, $pair) . " " .
                   CRM_Utils_Array::value($val, $field['options'], $val);
               }
-              elseif ($val) {
+              elseif ($val || $val == '0') {
                 $value = CRM_Utils_Array::value($op, $pair) . " " . $val;
               }
             }
