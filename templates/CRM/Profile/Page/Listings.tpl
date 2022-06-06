@@ -7,7 +7,7 @@
  | and copyright information, see https://civicrm.org/licensing       |
  +--------------------------------------------------------------------+
 *}
-{*debug*}
+
 <div class="crm-profile-name-{$ufGroupName}">
 {crmRegion name=profile-search-`$ufGroupName`}
 
@@ -37,6 +37,8 @@
     <div class="crm-search-results">
     {include file="CRM/common/pager.tpl" location="top"}
     {* Search criteria are passed to tpl in the $qill array *}
+
+
     {strip}
     <table>
       <tr class="columnheader">
