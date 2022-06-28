@@ -1,0 +1,27 @@
+{
+  "title": "Microsoft Exchange Online Single Tenant",
+  "options": {
+    "urlAuthorize": "https://login.microsoftonline.com/905bfc00-f254-4e13-aaf8-d78a96dfdcca/oauth2/v2.0/authorize",
+    "urlAccessToken": "https://login.microsoftonline.com/905bfc00-f254-4e13-aaf8-d78a96dfdcca/oauth2/v2.0/token",
+    "urlResourceOwnerDetails": "{{use_id_token}}",
+    "scopeSeparator": " ",
+    "scopes": [
+      "https://graph.microsoft.com/IMAP.AccessAsUser.All",
+      "https://graph.microsoft.com/SMTP.Send",
+      "openid",
+      "email",
+      "offline_access"
+    ]
+  },
+  "mailSettingsTemplate": {
+    "name": "{{token.resource_owner.email}}",
+    "domain": "{{token.resource_owner.email|getMailDomain}}",
+    "localpart": null,
+    "return_path": null,
+    "protocol:name": "IMAP",
+    "server": "outlook.office365.com",
+    "username": "{{token.resource_owner.email}}",
+    "password": null,
+    "is_ssl": true
+  }
+}
