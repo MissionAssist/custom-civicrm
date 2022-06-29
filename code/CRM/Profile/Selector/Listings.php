@@ -594,16 +594,9 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         $row[] = "";
       }
       if ($result->sort_name) {
-        if ($canView && $canMap) {
-          $row[] = $result->sort_name;
-          $empty = FALSE;
-        } else {
-          $row[] = "";
-          $empty = TRUE;
-        }
-        
-      }
-      else {
+        $row[] = $result->sort_name;
+        $empty = FALSE;
+      } else {
         continue;
       }
 
