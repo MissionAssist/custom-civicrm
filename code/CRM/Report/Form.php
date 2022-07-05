@@ -4667,7 +4667,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
       }
     }
     $yesNoFields = [
-      'do_not_email', 'is_deceased', 'do_not_phone', 'do_not_sms', 'do_not_mail', 'do_not_trade', 'is_opt_out',
+      'do_not_email', 'is_deceased', 'do_not_phone', 'do_not_sms', 'do_not_mail', 'do_not_trade', 'is_opt_out', 'is_deleted',
     ];
     foreach ($yesNoFields as $fieldName) {
       if (array_key_exists('civicrm_contact_' . $fieldName, $row)) {
