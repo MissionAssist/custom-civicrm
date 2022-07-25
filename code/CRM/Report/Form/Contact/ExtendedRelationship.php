@@ -57,12 +57,12 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' => [
           'sort_name_a' => [
-            'title' => ts('Contact A'),
+            'title' => ts('Organisation'),
             'name' => 'sort_name',
             'required' => TRUE,
           ],
           'display_name_a' => [
-            'title' => ts('Contact A Full Name'),
+            'title' => ts('Organisation Full Name'),
             'name' => 'display_name',
           ],
           'id' => [
@@ -70,23 +70,23 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             'required' => TRUE,
           ],
           'contact_type_a' => [
-            'title' => ts('Contact Type (Contact A)'),
+            'title' => ts('Contact Type (Organisation)'),
             'name' => 'contact_type',
           ],
           'contact_sub_type_a' => [
-            'title' => ts('Contact Subtype (Contact A)'),
+            'title' => ts('Contact Subtype (Organisation)'),
             'name' => 'contact_sub_type',
           ],
         ],
         'filters' => [
           'sort_name_a' => [
-            'title' => ts('Contact A'),
+            'title' => ts('Organisation'),
             'name' => 'sort_name',
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ],
           'contact_type_a' => [
-            'title' => ts('Contact Type A'),
+            'title' => ts('Contact Type A (Org)'),
             'name' => 'contact_type',
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => $contact_type,
@@ -95,7 +95,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         ],
         'order_bys' => [
           'sort_name_a' => [
-            'title' => ts('Contact A'),
+            'title' => ts('Organisation'),
             'name' => 'sort_name',
             'default_weight' => '1',
           ],
@@ -107,12 +107,12 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'alias' => 'contact_b',
         'fields' => [
           'sort_name_b' => [
-            'title' => ts('Contact B'),
+            'title' => ts('Individual'),
             'name' => 'sort_name',
             'required' => TRUE,
           ],
           'display_name_b' => [
-            'title' => ts('Contact B Full Name'),
+            'title' => ts('Individual Full Name'),
             'name' => 'display_name',
           ],
           'id' => [
@@ -120,34 +120,34 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             'required' => TRUE,
           ],
           'contact_type_b' => [
-            'title' => ts('Contact Type (Contact B)'),
+            'title' => ts('Contact Type (Individual)'),
             'name' => 'contact_type',
           ],
           'contact_sub_type_b' => [
-            'title' => ts('Contact Subtype (Contact B)'),
+            'title' => ts('Contact Subtype (Individual)'),
             'name' => 'contact_sub_type',
           ],
           'is_deleted_b' => [
-            'title' => ts('Is Deleted? (Contact B)'),
+            'title' => ts('Is Deleted? (Individual)'),
             'name' => 'is_deleted',
           ],
         ],
         'filters' => [
           'sort_name_b' => [
-            'title' => ts('Contact B'),
+            'title' => ts('Individual'),
             'name' => 'sort_name',
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ],
           'contact_type_b' => [
-            'title' => ts('Contact Type B'),
+            'title' => ts('Contact Type B (Ind)'),
             'name' => 'contact_type',
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => $contact_type,
             'type' => CRM_Utils_Type::T_STRING,
           ],
           'is_deleted_b' => [
-            'title' => ts('Is Deleted? (Contact B)'),
+            'title' => ts('Is Deleted? (Individual)'),
            'operatorType' => CRM_Report_Form::OP_SELECT,
            'options' => [
               0 => ts('No'),
@@ -160,7 +160,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         ],
         'order_bys' => [
           'sort_name_b' => [
-            'title' => ts('Contact B'),
+            'title' => ts('Individual'),
             'name' => 'sort_name',
             'default_weight' => '2',
           ],
@@ -171,7 +171,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'dao' => 'CRM_Core_DAO_Email',
         'fields' => [
           'email_a' => [
-            'title' => ts('Email (Contact A)'),
+            'title' => ts('Email (Organisation)'),
             'name' => 'email',
           ],
         ],
@@ -182,7 +182,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'alias' => 'email_b',
         'fields' => [
           'email_b' => [
-            'title' => ts('Email (Contact B)'),
+            'title' => ts('Email (Individual)'),
             'name' => 'email',
           ],
         ],
@@ -193,11 +193,11 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'alias' => 'phone_a',
         'fields' => [
           'phone_a' => [
-            'title' => ts('Phone (Contact A)'),
+            'title' => ts('Phone (Organisation)'),
             'name' => 'phone',
           ],
           'phone_ext_a' => [
-            'title' => ts('Phone Ext (Contact A)'),
+            'title' => ts('Phone Ext (Organisation)'),
             'name' => 'phone_ext',
           ],
         ],
@@ -208,11 +208,11 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'alias' => 'phone_b',
         'fields' => [
           'phone_b' => [
-            'title' => ts('Phone (Contact B)'),
+            'title' => ts('Phone (Individual)'),
             'name' => 'phone',
           ],
           'phone_ext_b' => [
-            'title' => ts('Phone Ext (Contact B)'),
+            'title' => ts('Phone Ext (Individual)'),
             'name' => 'phone_ext',
           ],
         ],
@@ -222,21 +222,21 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'dao' => 'CRM_Contact_DAO_RelationshipType',
         'fields' => [
           'label_a_b' => [
-            'title' => ts('Relationship A-B '),
+            'title' => ts('Relationship Organisation - Individual'),
             'default' => TRUE,
           ],
           'label_b_a' => [
-            'title' => ts('Relationship B-A '),
+            'title' => ts('Relationship Individual - Organisation'),
             'default' => TRUE,
           ],
         ],
         'order_bys' => [
           'label_a_b' => [
-            'title' => ts('Relationship A-B'),
+            'title' => ts('Relationship Organisation - Individual'),
             'name' => 'label_a_b',
           ],
           'label_b_A' => [
-            'title' => ts('Relationship B-A'),
+            'title' => ts('Relationship Individual - Organisation'),
             'name' => 'label_b_a',
           ],
         ],
@@ -299,10 +299,12 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
           'start_date' => [
             'title' => ts('Start Date'),
             'type' => CRM_Utils_Type::T_DATE,
+            'name' => 'start_date',
           ],
           'end_date' => [
             'title' => ts('End Date'),
             'type' => CRM_Utils_Type::T_DATE,
+            'name' => 'end_date',
           ],
           'active_period_date' => [
             'title' => ts('Active Period'),
@@ -352,35 +354,22 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         ],
         'grouping' => 'contact-fields',
       ],
-      'civicrm_membership_type' => [
-        'dao' => 'CRM_Member_DAO_MembershipType',
-        'grouping' => 'member-fields',
-        'filters' => [
-          'gid1' => [
-            'name' => 'id',
-            'title' => ts('Membership Types - Contact B'),
-            'type' => CRM_Utils_Type::T_INT + CRM_Utils_Type::T_ENUM,
-            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => CRM_Member_PseudoConstant::membershipType(),
-           ],
 
-        ],
-      ],
       'civicrm_membership' => [
         'dao' => 'CRM_Member_DAO_Membership',
         'grouping' => 'member-fields',
         'fields' => [
           'membership_type_id' => [
-            'title' => ts('Membership Type - Contact B'),
+            'title' => ts('Membership Type - Individual'),
           ],
           'join_date' => [
-            'title' => ts('Contact B - Member Since'),
+            'title' => ts('Individual - Member Since'),
           ],
           'start_date' => [
-            'title' => ts('Current Cycle Start Date'),
+            'title' => ts('Current Membership Start Date'),
           ],
           'end_date' => [
-            'title' => ts('Current Cycle End Date'),
+            'title' => ts('Current Membership End Date'),
           ],
         ],
         'group_bys' => [
@@ -388,13 +377,21 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         ],
         'filters' => [
           'membership_join_date' => ['type' => CRM_Utils_Type::T_DATE,
-          'title' => ts('Contact B - Member Since'),],
+          'title' => ts('Individual - Member Since'),],
           'start_date' => ['type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Start Date'),],
           'end_date' => ['type' => CRM_Utils_Type::T_DATE,
           'title' => ts('End Date'),],
+
+          'membership_type_id' => [
+          'name' => 'membership_type_id',
+          'title' => ts('Membership Types - Individual'),
+          'type' => CRM_Utils_Type::T_INT,
+          'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+          'options' => CRM_Member_PseudoConstant::membershipType(),
+           ],
+          ],
         ],
-      ],
         
     ];
 
@@ -455,7 +452,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
                              {$this->_aliases['civicrm_membership']}.contact_id )
 
 
-             {$this->_aclFrom} ";
+              {$this->_aclFrom} ";
 
     if (!empty($this->_params['country_id_value']) ||
       !empty($this->_params['state_province_id_value'])
@@ -511,10 +508,10 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             $to = $this->_params["{$fieldName}_to"] ?? NULL;
 
             if ($fieldName == 'active_period_date') {
-              $clause = $this->activeClause($field['name'], $relative, $from, $to, $field['type']);
+              $clause = $this->activeClause($field['dbAlias'], $relative, $from, $to, $field['type'], $field['alias']);
             }
             else {
-              $clause = $this->dateClause($field['name'], $relative, $from, $to, $field['type']);
+              $clause = $this->dateClause($field['dbAlias'], $relative, $from, $to, $field['type']);
             }
           }
           else {
@@ -823,7 +820,13 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
           = ts(self::permissionedRelationship($row['civicrm_relationship_is_permission_b_a']));
         $entryFound = TRUE;
       }
-
+      // Handle Membership Type
+      if (array_key_exists('civicrm_membership_membership_type_id', $row)) {
+        if ($value = $row['civicrm_membership_membership_type_id']) {
+          $rows[$rowNum]['civicrm_membership_membership_type_id'] = CRM_Member_PseudoConstant::membershipType($value, FALSE);
+          $entryFound = TRUE;
+        }
+      }
       // skip looking further in rows, if first row itself doesn't
       // have the column we need
       if (!$entryFound) {
@@ -854,11 +857,15 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
     $clause = NULL;
     if ($valid == '1') {
       // Relationships dates are not expired.
-      $clause = "((start_date <= CURDATE() OR start_date is null) AND (end_date >= CURDATE() OR end_date is null))";
+      $clause = "((relationship_civireport.start_date <= CURDATE()"
+              . "OR relationship_civireport.start_date is null) "
+              . "AND (relationship_civireport.end_date >= CURDATE() "
+              . "OR relationship_civireport.end_date is null))";
     }
     elseif ($valid == '0') {
       // Relationships dates are expired or has not started yet.
-      $clause = "(start_date >= CURDATE() OR end_date < CURDATE())";
+      $clause = "(relationship_civireport.start_date >= CURDATE()"
+              . "OR relationship_civireport.end_date < CURDATE())";
     }
     return $clause;
   }
@@ -876,7 +883,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
    */
   public function activeClause(
     $fieldName,
-    $relative, $from, $to, $type = NULL) {
+    $relative, $from, $to, $type = NULL, $tablename = NULL) {
     $clauses = [];
     if (array_key_exists($relative, $this->getOperationPair(CRM_Report_Form::OP_DATE))) {
       return NULL;
@@ -893,7 +900,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
     }
 
     if ($from || $to) {
-      return CRM_Contact_BAO_Query::getRelationshipActivePeriodClauses($from, $to, FALSE);
+      return CRM_Contact_BAO_Query::getRelationshipActivePeriodClauses($from, $to, $tablename);
     }
     return NULL;
   }
