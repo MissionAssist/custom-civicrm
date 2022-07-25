@@ -91,6 +91,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => $contact_type,
             'type' => CRM_Utils_Type::T_STRING,
+            'default' => 'Organization',
           ],
         ],
         'order_bys' => [
@@ -145,6 +146,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => $contact_type,
             'type' => CRM_Utils_Type::T_STRING,
+            'default' => 'Individual',
           ],
           'is_deleted_b' => [
             'title' => ts('Is Deleted? (Individual)'),
