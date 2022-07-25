@@ -3015,7 +3015,9 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     // fields array is missing because form building etc is skipped
     // in dashboard mode for report
     //@todo - this could be done in the dashboard no we have a setter
-    if (empty($this->_params['fields']) && !$this->_noFields) {
+    if (empty($this->_params['fields']) && !$this->_noFields
+      && empty($this->_params['task'])
+    ) {
       $this->setParams($this->_formValues);
     }
 
@@ -4667,7 +4669,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
       }
     }
     $yesNoFields = [
-      'do_not_email', 'is_deceased', 'do_not_phone', 'do_not_sms', 'do_not_mail', 'do_not_trade', 'is_opt_out', 'is_deleted',
+      'do_not_email', 'is_deceased', 'do_not_phone', 'do_not_sms', 'do_not_mail', 'do_not_trade', 'is_opt_out',
     ];
     foreach ($yesNoFields as $fieldName) {
       if (array_key_exists('civicrm_contact_' . $fieldName, $row)) {
