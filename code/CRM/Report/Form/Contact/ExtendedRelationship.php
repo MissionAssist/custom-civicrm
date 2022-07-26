@@ -249,9 +249,11 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
         'fields' => [
           'start_date' => [
             'title' => ts('Relationship Start Date'),
+            'type' => CRM_Utils_Type::T_DATE,
           ],
           'end_date' => [
             'title' => ts('Relationship End Date'),
+            'type' => CRM_Utils_Type::T_DATE,             
           ],
           'is_permission_a_b' => [
             'title' => ts('Permission A has to access B'),
@@ -299,12 +301,12 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             'type' => CRM_Utils_Type::T_INT,
           ],
           'start_date' => [
-            'title' => ts('Start Date'),
+            'title' => ts('Relationship Start Date'),
             'type' => CRM_Utils_Type::T_DATE,
             'name' => 'start_date',
           ],
           'end_date' => [
-            'title' => ts('End Date'),
+            'title' => ts('Relationship End Date'),
             'type' => CRM_Utils_Type::T_DATE,
             'name' => 'end_date',
           ],
@@ -325,14 +327,13 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
             'type' => CRM_Utils_Type::T_INT,
           ],
         ],
-
         'order_bys' => [
           'start_date' => [
-            'title' => ts('Start Date'),
+            'title' => ts('Relationship Start Date'),
             'name' => 'start_date',
           ],
           'end_date' => [
-            'title' => ts('End Date'),
+            'title' => ts('Relationship End Date'),
             'name' => 'end_date',
           ],
         ],
@@ -367,23 +368,20 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
           'join_date' => [
             'title' => ts('Individual - Member Since'),
           ],
-          'start_date' => [
+          'membership_start_date' => [
             'title' => ts('Current Membership Start Date'),
           ],
-          'end_date' => [
+          'membership_end_date' => [
             'title' => ts('Current Membership End Date'),
           ],
         ],
-        'group_bys' => [
-          'membership_type_id' => ['title' => ts('Membership Type')],
-        ],
-        'filters' => [
+         'filters' => [
           'membership_join_date' => ['type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Individual - Member Since'),],
           'start_date' => ['type' => CRM_Utils_Type::T_DATE,
-          'title' => ts('Start Date'),],
+          'title' => ts('Membership Start Date'),],
           'end_date' => ['type' => CRM_Utils_Type::T_DATE,
-          'title' => ts('End Date'),],
+          'title' => ts('Membership End Date'),],
 
           'membership_type_id' => [
           'name' => 'membership_type_id',
@@ -661,8 +659,7 @@ class CRM_Report_Form_Contact_ExtendedRelationship extends CRM_Report_Form {
   }
 
   public function groupBy() {
-    $this->_groupBy = " ";
-    $groupBy = [];
+   
     if ($this->relationType == 'a_b') {
       $groupBy[] = " {$this->_aliases['civicrm_contact']}.id";
     }
