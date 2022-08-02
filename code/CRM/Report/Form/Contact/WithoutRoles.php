@@ -343,11 +343,11 @@ class CRM_Report_Form_Contact_WithoutRoles extends CRM_Report_Form {
       }
     }
     $this->_where = "WHERE ( {$this->_aliases['civicrm_contact']}.is_deleted = 0) ";
-    $whereClauses[] = $this->_aliases['civicrm_contact'] . ".id NOT IN (select distinct contact.id  FROM civicrm.civicrm_contact contact
-      INNER JOIN civicrm.civicrm_membership membership on membership.contact_id = contact.id and membership.membership_type_id = 1
-      INNER join civicrm.civicrm_relationship relationship on relationship.contact_id_b = contact.id and relationship.is_active
-      INNER join civicrm.civicrm_relationship_type relationship_type on relationship_type.id = relationship.relationship_type_id
-      INNER join civicrm.civicrm_contact team on team.id = relationship.contact_id_a 
+    $whereClauses[] = $this->_aliases['civicrm_contact'] . ".id NOT IN (select distinct contact.id  FROM civicrm_contact contact
+      INNER JOIN civicrm_membership membership on membership.contact_id = contact.id and membership.membership_type_id = 1
+      INNER join civicrm_relationship relationship on relationship.contact_id_b = contact.id and relationship.is_active
+      INNER join civicrm_relationship_type relationship_type on relationship_type.id = relationship.relationship_type_id
+      INNER join civicrm_contact team on team.id = relationship.contact_id_a 
       where contact.contact_type = 'Individual' and not contact.is_deleted and not contact.is_deceased and team.contact_type  = 'Organization')";
 
     if ($whereClauses) {
