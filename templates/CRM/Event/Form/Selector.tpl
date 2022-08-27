@@ -72,7 +72,7 @@
     {/if}
     <td class="crm-participant-participant_register_date">{$row.participant_register_date|truncate:10:''|crmDate}</td>
     <td class="crm-participant-event_start_date">{$row.event_start_date|truncate:10:''|crmDate}
-        {if $row.event_end_date && $row.event_end_date|date_format:"%Y%m%d" NEQ $row.event_start_date|date_format:"%Y%m%d"}
+        {if $row.event_end_date && $row.event_end_date|crmDate:"%Y%m%d" NEQ $row.event_start_date|crmDate:"%Y%m%d"}
             <br/>- {$row.event_end_date|truncate:10:''|crmDate}
         {/if}
    </td>

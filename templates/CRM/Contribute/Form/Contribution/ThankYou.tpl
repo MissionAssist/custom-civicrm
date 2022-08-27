@@ -215,13 +215,12 @@
     </fieldset>
   {/if}
 
-  {if $pcpBlock}
+  {if $pcpBlock && $pcp_display_in_roll}
     <div class="crm-group pcp_display-group">
       <div class="header-dark">
         {ts}Contribution Honor Roll{/ts}
       </div>
       <div class="display-block">
-        {if $pcp_display_in_roll}
           {ts}List my contribution{/ts}
           {if $pcp_is_anonymous}
             <strong>{ts}anonymously{/ts}.</strong>
@@ -233,9 +232,6 @@
               <strong>{ts}With no personal note{/ts}</strong>
             {/if}
           {/if}
-        {else}
-          {ts}Don't list my contribution in the honor roll.{/ts}
-        {/if}
         <br />
       </div>
     </div>
