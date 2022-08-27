@@ -535,6 +535,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
   public function alterDisplay(&$rows) {
     // Custom code to alter rows.
     $entryFound = FALSE;
+    $profileID = '&gid=26';
 
     foreach ($rows as $rowNum => $row) {
 
@@ -580,15 +581,23 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
       if (array_key_exists('civicrm_contact_a_sort_name_a', $row) &&
         array_key_exists('civicrm_contact_a_id', $row)
       ) {
-        $url = CRM_Report_Utils_Report::getNextUrl('contact/detail',
-          'reset=1&force=1&id_op=eq&id_value=' . $row['civicrm_contact_a_id'],
-          $this->_absoluteUrl, $this->_id, $this->_drilldownReport
-        );
+        if (CRM_Core_Permission::check('administer users') ||
+                CRM_Core_Permission::check('view all contacts')
+                || CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_a_id'])) {
+        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_a_id'];
         $rows[$rowNum]['civicrm_contact_a_sort_name_a']
           = $rows[$rowNum]['civicrm_contact_a_sort_name_a'] . ' (' .
           $rows[$rowNum]['civicrm_contact_a_id'] . ')';
         $rows[$rowNum]['civicrm_contact_a_sort_name_a_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a_hover'] = ts('View Contact Detail Report for this contact');
+        $rows[$rowNum]['civicrm_contact_a_sort_name_a_hover'] = ts('View Organisation');    
+        } else {
+        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_a_id'] . $profileID;
+        $rows[$rowNum]['civicrm_contact_a_sort_name_a']
+          = $rows[$rowNum]['civicrm_contact_a_sort_name_a'] . ' (' .
+          $rows[$rowNum]['civicrm_contact_a_id'] . ')';
+        $rows[$rowNum]['civicrm_contact_a_sort_name_a_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_a_sort_name_a_hover'] = ts('View Profile for this organisation');
+        }
         $entryFound = TRUE;
       }
 
@@ -597,15 +606,25 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
       if (array_key_exists('civicrm_contact_sort_name_b', $row) &&
         array_key_exists('civicrm_contact_id', $row)
       ) {
-        $url = CRM_Report_Utils_Report::getNextUrl('contact/detail',
-          'reset=1&force=1&id_op=eq&id_value=' . $row['civicrm_contact_id'],
-          $this->_absoluteUrl, $this->_id, $this->_drilldownReport
-        );
+        if (CRM_Core_Permission::check('administer users') ||
+         CRM_Core_Permission::check('view all contacts')
+         || CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_id'])) {
+
+        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_id'];
         $rows[$rowNum]['civicrm_contact_sort_name_b']
           = $rows[$rowNum]['civicrm_contact_sort_name_b'] . ' (' .
           $rows[$rowNum]['civicrm_contact_id'] . ')';
         $rows[$rowNum]['civicrm_contact_sort_name_b_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_b_hover'] = ts('View Contact Detail Report for this contact');
+        $rows[$rowNum]['civicrm_contact_sort_name_b_hover'] = ts('View Contact');
+   
+      } else {
+        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_id'] . $profileID;
+        $rows[$rowNum]['civicrm_contact_sort_name_b']
+          = $rows[$rowNum]['civicrm_contact_sort_name_b'] . ' (' .
+          $rows[$rowNum]['civicrm_contact_id'] . ')';
+        $rows[$rowNum]['civicrm_contact_sort_name_b_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_sort_name_b_hover'] = ts('View Contact Profile');
+      }
         $entryFound = TRUE;
       }
 

@@ -26,7 +26,7 @@ class CRM_Report_Form extends CRM_Core_Form {
   /**
    * Deprecated constant, Reports should be updated to use the getRowCount function.
    */
-  const ROW_COUNT_LIMIT = 50;
+  //const ROW_COUNT_LIMIT = 50;
 
   /**
    * Operator types - used for displaying filter elements
