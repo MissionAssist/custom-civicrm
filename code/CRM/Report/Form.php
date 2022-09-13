@@ -26,7 +26,7 @@ class CRM_Report_Form extends CRM_Core_Form {
   /**
    * Deprecated constant, Reports should be updated to use the getRowCount function.
    */
-  const ROW_COUNT_LIMIT = 50;
+  //const ROW_COUNT_LIMIT = 50;
 
   /**
    * Operator types - used for displaying filter elements
@@ -628,8 +628,8 @@ class CRM_Report_Form extends CRM_Core_Form {
     // Ensure smarty variables are assigned here since this function is called from
     // the report api and the main buildForm is not.
     self::$_template->ensureVariablesAreAssigned($this->expectedSmartyVariables);
-    $this->_dashBoardRowCount = CRM_Utils_Request::retrieve('rowCount', 'Integer');
-
+    //$this->_dashBoardRowCount = CRM_Utils_Request::retrieve('rowCount', 'Integer');
+    $this->_dashBoardRowCount = CRM_Utils_Request::retrieve('rowCount', 'Integer') ?? CRM_Utils_Request::retrieve('crmRowCount', 'Integer');
     $this->_section = CRM_Utils_Request::retrieve('section', 'Integer');
 
     $this->assign('section', $this->_section);
