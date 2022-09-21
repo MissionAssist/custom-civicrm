@@ -3047,16 +3047,17 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
   /**
    * Build the report query.
    *
-   * @param bool $applyLimit
+   * @param bool $applyLimit, bool $checkPermissions
    *
    * @return string
    */
-  public function buildQuery($applyLimit = TRUE) {
+  public function buildQuery($applyLimit = TRUE,
+          $checkPermssions = TRUE) {
     $this->buildGroupTempTable();
     $this->select();
     $this->from();
     $this->customDataFrom();
-    $this->buildPermissionClause();
+    $this->buildPermissionClause($checkPermssions);
     $this->where();
     $this->groupBy();
     $this->orderBy();
@@ -3938,16 +3939,24 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
    * Note that if the buildPermissionClause function is called (which most reports do from
    * buildQuery then the results of this function are re-calculated and overwritten.
    *
-   * @param string $tableAlias
+   * @param string $tableAlias, $checkPermission
+   * $checkPermission false will allow us to fine-tune what we expose to the
+   * report.
    */
-  public function buildACLClause($tableAlias = 'contact_a') {
-    [$this->_aclFrom, $this->_aclWhere] = CRM_Contact_BAO_Contact_Permission::cacheClause($tableAlias);
+  public function buildACLClause($tableAlias = 'contact_a', $checkPermission = TRUE) {
+    [$this->_aclFrom, 
+        $this->_aclWhere] = ($checkPermission ? CRM_Contact_BAO_Contact_Permission::cacheClause($tableAlias) : [NULL, '( 1 )']);
   }
 
   /**
    * Build the permission clause for all entities in this report
+   * @param $checkPermission allows us to fine tune permission.
    */
-  public function buildPermissionClause() {
+  public function buildPermissionClause($checkPermissions = TRUE) {
+    if (!$checkPermissions) {
+        // If we aren't checking permissions, teen return.
+        return;
+    }
     $ret = [];
     foreach ($this->selectedTables() as $tableName) {
       $baoName = str_replace('_DAO_', '_BAO_', (CRM_Core_DAO_AllCoreTables::getClassForTable($tableName) ?? ''));
