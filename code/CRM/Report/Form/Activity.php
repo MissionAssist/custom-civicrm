@@ -619,8 +619,7 @@ class CRM_Report_Form_Activity extends CRM_Report_Form {
   /**
    * Build ACL clause.
    *
-   * @param array $tableAlias, $checkPermissions
-   * MA - makes it compatible with the customised Form
+   * @param array $tableAlias
    *
    * @throws \CRM_Core_Exception
    */
@@ -716,8 +715,7 @@ GROUP BY civicrm_activity_id $having {$this->_orderBy}";
   }
 
   /**
-   * @param $applyLimit, $checkPermissions
-   * MA - make compatible with custom Form.php
+   * @param $applyLimit
    *
    * @return string
    */

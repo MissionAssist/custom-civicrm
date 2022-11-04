@@ -514,7 +514,7 @@ GROUP BY {$this->_aliases['civicrm_contribution']}.currency";
   /**
    * Build the report query.
    *
-   * @param bool $applyLimit, $checkPermissions
+   * @param bool $applyLimit
    *
    * @return string
    */
