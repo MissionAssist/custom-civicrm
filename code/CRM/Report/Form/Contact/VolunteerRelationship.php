@@ -79,7 +79,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
             'no_display' => TRUE,
             'required' => TRUE,
           ],
-       ],
+        ],
         'filters' => [
           'sort_name_b' => [
             'title' => ts('Name'),
@@ -96,16 +96,52 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
             'default' => 'Individual',
             'no_display' => TRUE,
           ],
+        ],          
+        'grouping' => 'contact_b_fields',
+      ],
+      'civicrm_email_b' => [
+        'dao' => 'CRM_Core_DAO_Email',
+        'alias' => 'email_b',
+        'fields' => [
+          'email_b' => [
+            'title' => ts('Email'),
+            'name' => 'email',
+          ],          
         ],
+        'filters' => [
+          'email_b' => [
+            'title' => ts('Email'),
+            'name' => 'email',
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ],
+        ],
+      'grouping' => 'contact_b_fields',  
+      ],
+      'civicrm_phone_b' => [
+        'dao' => 'CRM_Core_DAO_Phone',
+        'alias' => 'phone_b',
+        'fields' => [
+          'phone_b' => [
+            'title' => ts('Phone'),
+            'name' => 'phone',
+          ],
+          'phone_ext_b' => [
+            'title' => ts('Phone Ext'),
+            'name' => 'phone_ext',
+          ],
+        ],
+        'grouping' => 'contact_b_fields',  
+      ],
         'order_bys' => [
           'sort_name_b' => [
             'title' => ts('Name'),
             'name' => 'sort_name',
             'default_weight' => '1',
           ],
-        ],
         'grouping' => 'contact_b_fields',
-      ],
+        ],
+
       'civicrm_relationship_type' => [
         'dao' => 'CRM_Contact_DAO_RelationshipType',
         'fields' => [
@@ -199,32 +235,6 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
         ],
         'grouping' => 'contact_a_fields',
       ],
-      'civicrm_email_b' => [
-        'dao' => 'CRM_Core_DAO_Email',
-        'alias' => 'email_b',
-        'fields' => [
-          'email_b' => [
-            'title' => ts('Email'),
-            'name' => 'email',
-          ],
-        ],
-        'grouping' => 'contact_b_fields',
-      ],
-      'civicrm_phone_b' => [
-        'dao' => 'CRM_Core_DAO_Phone',
-        'alias' => 'phone_b',
-        'fields' => [
-          'phone_b' => [
-            'title' => ts('Phone'),
-            'name' => 'phone',
-          ],
-          'phone_ext_b' => [
-            'title' => ts('Phone Ext'),
-            'name' => 'phone_ext',
-          ],
-        ],
-        'grouping' => 'contact_a_fields',
-      ],
 
     ];
 
@@ -239,15 +249,17 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
 
   public function select() {
     $select = $this->_columnHeaders = [];
+    // Always join on email so we can filter by it even if we don't display it.
+    $this->_emailField_b = TRUE;
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('fields', $table)) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (!empty($field['required']) ||
             !empty($this->_params['fields'][$fieldName])
           ) {
-            if ($fieldName == 'email_b') {
-              $this->_emailField_b = TRUE;
-            }
+            //if ($fieldName == 'email_b') {
+            //  $this->_emailField_b = TRUE;
+            //}
             if ($fieldName == 'phone_b') {
               $this->_phoneField_b = TRUE;
             }
