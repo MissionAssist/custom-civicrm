@@ -215,15 +215,11 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
         'alias' => 'phone_b',
         'fields' => [
           'phone_b' => [
-            'title' => ts('Phone'),
+            'title' => ts('Primary Phone'),
             'name' => 'phone',
           ],
-          'phone_ext_b' => [
-            'title' => ts('Phone Ext'),
-            'name' => 'phone_ext',
-          ],
         ],
-        'grouping' => 'contact_a_fields',
+        'grouping' => 'contact_b_fields',
       ],
 
     ];
