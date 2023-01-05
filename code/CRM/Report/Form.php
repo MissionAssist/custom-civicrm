@@ -4958,6 +4958,9 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
       'employer_id' => [
         'title' => ts('Current Employer'),
       ],
+      'created_date' => [
+        'title' => ts('Created Date'),
+      ],
     ];
   }
 
