@@ -338,8 +338,7 @@ class CRM_Core_BAO_UFGroup extends CRM_Core_DAO_UFGroup implements \Civi\Core\Ho
       $field = CRM_Core_DAO::executeQuery($query);
 
       $importableFields = self::getProfileFieldMetadata($showAll);
-//      [$customFields, $addressCustomFields] = self::getCustomFields($ctype, $skipPermission ? FALSE : $permissionType);
-      [$customFields, $addressCustomFields] = self::getCustomFields($ctype, FALSE);
+      [$customFields, $addressCustomFields] = self::getCustomFields($ctype, $skipPermission ? FALSE : $permissionType);
 
       while ($field->fetch()) {
         [$name, $formattedField] = self::formatUFField($group, $field, $customFields, $addressCustomFields, $importableFields, $permissionType);
@@ -730,9 +729,11 @@ class CRM_Core_BAO_UFGroup extends CRM_Core_DAO_UFGroup implements \Civi\Core\Ho
     if ($checkPermission == CRM_Core_Permission::CREATE) {
       $checkPermission = CRM_Core_Permission::EDIT;
     }
-    $cacheKey = 'uf_group_custom_fields_' . $ctype . '_' . (int) $checkPermission;
+    // Make the cache user specific by adding the ID to the key.
+    $id = CRM_Core_Session::getLoggedInContactID();
+    $cacheKey = 'uf_group_custom_fields_' . $ctype . '_' . $id . '_' . (int) $checkPermission;
     if (!Civi::cache('metadata')->has($cacheKey)) {
-      $customFields = CRM_Core_BAO_CustomField::getFieldsForImport($ctype, FALSE, FALSE, FALSE, FALSE, FALSE);
+      $customFields = CRM_Core_BAO_CustomField::getFieldsForImport($ctype, FALSE, FALSE, FALSE, $checkPermission, TRUE);
 
       // hack to add custom data for components
       $components = ['Contribution', 'Participant', 'Membership', 'Activity', 'Case'];
@@ -743,8 +744,6 @@ class CRM_Core_BAO_UFGroup extends CRM_Core_DAO_UFGroup implements \Civi\Core\Ho
       $customFields = array_merge($customFields, $addressCustomFields);
       Civi::cache('metadata')->set($cacheKey, [$customFields, $addressCustomFields]);
     }
-    [$customFields, $addressCustomFields] = Civi::cache('metadata')->get($cacheKey);
-
     return Civi::cache('metadata')->get($cacheKey);
   }
 
