@@ -61,7 +61,6 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
   public function __construct() {
 
     $contact_type = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, TRUE, '_');
-    $contactId = CRM_Core_Session::getLoggedInContactID();
     $this->_columns = [
       'civicrm_contact' => [
         'dao' => 'CRM_Contact_DAO_Contact',
@@ -101,7 +100,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
              'name' => 'do_not_trade',
              'operatorTy[e' => CRM_Report_Form::OP_INT,
              'default' => 0,
-             'no_display' => !CRM_Core_Permission::check('View all contacts', $contactId),
+             'no_display' => !CRM_Core_Permission::check('View all contacts'),
          ],
         ],
         'order_bys' => [
