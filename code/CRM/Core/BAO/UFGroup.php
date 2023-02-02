@@ -918,10 +918,11 @@ class CRM_Core_BAO_UFGroup extends CRM_Core_DAO_UFGroup implements \Civi\Core\Ho
 
         $template = CRM_Core_Smarty::singleton();
 
-        // Hide CRM error messages if they are set by the CMS.
-        if (!empty($_POST)) {
-          $supressForm = CRM_Core_Config::singleton()->userSystem->suppressProfileFormErrors();
-          $template->assign('suppressForm', $supressForm);
+        // Hide CRM error messages if they are displayed using drupal form_set_error.
+        if (!empty($_POST) && CRM_Core_Config::singleton()->userFramework == 'Drupal') {
+          if (arg(0) == 'user' || (arg(0) == 'admin' && arg(1) == 'people')) {
+            $template->assign('suppressForm', TRUE);
+        }
         }
 
         $templateFile = "CRM/Profile/Form/{$profileID}/Dynamic.tpl";
@@ -1674,7 +1675,7 @@ AND    ( entity_id IS NULL OR entity_id <= 0 )
    *   array of ufgroups for a module
    */
   public static function getModuleUFGroup($moduleName = NULL, $count = 0, $skipPermission = TRUE, $op = CRM_Core_Permission::VIEW, $returnFields = NULL) {
-    $selectFields = ['id', 'name', 'title', 'created_id', 'is_active', 'is_reserved', 'group_type', 'description'];
+    $selectFields = ['id', 'title', 'created_id', 'is_active', 'is_reserved', 'group_type', 'description'];
 
     if (CRM_Core_BAO_SchemaHandler::checkIfFieldExists('civicrm_uf_group', 'frontend_title')) {
       $selectFields[] = 'frontend_title';
