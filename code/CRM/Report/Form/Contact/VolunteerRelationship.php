@@ -100,7 +100,8 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
              'name' => 'do_not_trade',
              'operatorTy[e' => CRM_Report_Form::OP_INT,
              'default' => 0,
-             'no_display' => !CRM_Core_Permission::check('View all contacts'),
+             'no_display' => !(CRM_Core_Permission::check('administer users') ||
+                CRM_Core_Permission::check('view all contacts')),
          ],
         ],
         'order_bys' => [
