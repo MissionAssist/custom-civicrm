@@ -113,6 +113,18 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
         ],
         'grouping' => 'contact_b_fields',
       ],
+      'civicrm_email_b' => [
+        'dao' => 'CRM_Core_DAO_Email',
+        'alias' => 'email_b',
+        'fields' => [
+          'email_b' => [
+            'title' => ts('Personal MA Email'),
+            'name' => 'email',
+          ],
+        ],
+        'grouping' => 'contact_b_fields',
+      ],
+
       'civicrm_relationship_type' => [
         'dao' => 'CRM_Contact_DAO_RelationshipType',
         'fields' => [
@@ -163,7 +175,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
         ],
       ],
 
-        'civicrm_contact_a' => [
+      'civicrm_contact_a' => [
         'dao' => 'CRM_Contact_DAO_Contact',
         'alias' => 'contact_a',
         'fields' => [
@@ -206,17 +218,18 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
         ],
         'grouping' => 'contact_a_fields',
       ],
-      'civicrm_email_b' => [
+      'civicrm_email_a' => [
         'dao' => 'CRM_Core_DAO_Email',
-        'alias' => 'email_b',
+        'alias' => 'email_a',
         'fields' => [
-          'email_b' => [
-            'title' => ts('Email'),
+          'email_a' => [
+            'title' => ts('Team Email'),
             'name' => 'email',
           ],
         ],
-        'grouping' => 'contact_b_fields',
+        'grouping' => 'contact_a_fields',
       ],
+
       'civicrm_phone_b' => [
         'dao' => 'CRM_Core_DAO_Phone',
         'alias' => 'phone_b',
@@ -250,6 +263,9 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
           ) {
             if ($fieldName == 'email_b') {
               $this->_emailField_b = TRUE;
+            }
+            if ($fieldName == 'email_a') {
+              $this->_emailField_a = TRUE;
             }
             if ($fieldName == 'phone_b') {
               $this->_phoneField_b = TRUE;
@@ -299,7 +315,12 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
 
     // Include Email Field.
     if ($this->_emailField_a) {
-      $this->joinEmailFromContact();
+      $this->_from .= "
+             LEFT JOIN civicrm_email {$this->_aliases['civicrm_email_a']}
+                       ON ( {$this->_aliases['civicrm_contact_a']}.id =
+                            {$this->_aliases['civicrm_email_a']}.contact_id AND
+                            {$this->_aliases['civicrm_email_a']}.is_primary = 1 )";
+
     }
     if ($this->_emailField_b) {
       $this->_from .= "
