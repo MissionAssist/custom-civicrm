@@ -5305,10 +5305,6 @@ civicrm_relationship.start_date > {$today}
   ) {
     // @todo - remove dateFormat - pretty sure it's never passed in...
     [$name, $op, $value, $grouping, $wildcard] = $values;
-    if ($name !== $fieldName && $name !== "{$fieldName}_low" && $name !== "{$fieldName}_high") {
-      CRM_Core_Error::deprecatedFunctionWarning('Date query builder called unexpectedly');
-      return;
-    }
     if ($tableName === 'civicrm_contact') {
       // Special handling for contact table as it has a known alias in advanced search.
       $tableName = 'contact_a';
@@ -6758,8 +6754,6 @@ AND   displayRelType.is_active = 1
    * @param string $additionalFromClause
    *   Should be clause with proper joins, effective to reduce where clause load.
    *
-   * @param bool $skipOrderAndLimit
-   *
    * @return string
    *
    * @throws \CRM_Core_Exception
@@ -6769,24 +6763,11 @@ AND   displayRelType.is_active = 1
     $count = FALSE, $includeContactIds = FALSE,
     $sortByChar = FALSE, $groupContacts = FALSE,
     $additionalWhereClause = NULL, $sortOrder = NULL,
-    $additionalFromClause = NULL, $skipOrderAndLimit = FALSE) {
+    $additionalFromClause = NULL) {
 
     $sqlParts = $this->getSearchSQLParts($offset, $rowCount, $sort, $count, $includeContactIds, $sortByChar, $groupContacts, $additionalWhereClause, $sortOrder, $additionalFromClause);
-
-    if ($sortByChar) {
-      CRM_Core_Error::deprecatedFunctionWarning('sort by char is deprecated - use alphabetQuery method');
-      $sqlParts['order_by'] = 'ORDER BY sort_name asc';
+    return "{$sqlParts['select']} {$sqlParts['from']} {$sqlParts['where']} {$sqlParts['having']} {$sqlParts['group_by']} {$sqlParts['order_by']} {$sqlParts['limit']}";
     }
-
-    if ($skipOrderAndLimit) {
-      CRM_Core_Error::deprecatedFunctionWarning('skipOrderAndLimit is deprected - call getSearchSQLParts & construct it in the calling function');
-      $query = "{$sqlParts['select']} {$sqlParts['from']} {$sqlParts['where']} {$sqlParts['having']} {$sqlParts['group_by']}";
-    }
-    else {
-      $query = "{$sqlParts['select']} {$sqlParts['from']} {$sqlParts['where']} {$sqlParts['having']} {$sqlParts['group_by']} {$sqlParts['order_by']} {$sqlParts['limit']}";
-    }
-    return $query;
-  }
 
   /**
    * Get the component parts of the search query as an array.
