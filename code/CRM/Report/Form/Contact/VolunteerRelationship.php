@@ -62,8 +62,9 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
 
     $contact_type = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, TRUE, '_');
     $this->_columns = [
-      'civicrm_contact' => [
+      'civicrm_contact_b' => [
         'dao' => 'CRM_Contact_DAO_Contact',
+        'alias' => 'contact_b',          
         'fields' => [
           'sort_name_b' => [
             'title' => ts('Name'),
@@ -286,9 +287,9 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
     $this->_from = "
         FROM civicrm_relationship {$this->_aliases['civicrm_relationship']}
 
-             INNER JOIN civicrm_contact {$this->_aliases['civicrm_contact']}
+             INNER JOIN civicrm_contact {$this->_aliases['civicrm_contact_b']}
                         ON ( {$this->_aliases['civicrm_relationship']}.contact_id_b =
-                             {$this->_aliases['civicrm_contact']}.id )
+                             {$this->_aliases['civicrm_contact_b']}.id )
 
              INNER JOIN civicrm_contact {$this->_aliases['civicrm_contact_a']}
                         ON ( {$this->_aliases['civicrm_relationship']}.contact_id_a =
@@ -302,7 +303,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
       $this->_from .= "
             INNER  JOIN civicrm_address {$this->_aliases['civicrm_address']}
                          ON (( {$this->_aliases['civicrm_address']}.contact_id =
-                               {$this->_aliases['civicrm_contact']}.id  OR
+                               {$this->_aliases['civicrm_contact_b']}.id  OR
                                {$this->_aliases['civicrm_address']}.contact_id =
                                {$this->_aliases['civicrm_contact_a']}.id ) AND
                                {$this->_aliases['civicrm_address']}.is_primary = 1 ) ";
@@ -325,7 +326,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
     if ($this->_emailField_b) {
       $this->_from .= "
              LEFT JOIN civicrm_email {$this->_aliases['civicrm_email_b']}
-                       ON ( {$this->_aliases['civicrm_contact']}.id =
+                       ON ( {$this->_aliases['civicrm_contact_b']}.id =
                             {$this->_aliases['civicrm_email_b']}.contact_id AND
                             {$this->_aliases['civicrm_email_b']}.is_primary = 1 )";
     }
@@ -336,7 +337,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
     if ($this->_phoneField_b) {
       $this->_from .= "
              LEFT JOIN civicrm_phone {$this->_aliases['civicrm_phone_b']}
-                       ON ( {$this->_aliases['civicrm_contact']}.id =
+                       ON ( {$this->_aliases['civicrm_contact_b']}.id =
                             {$this->_aliases['civicrm_phone_b']}.contact_id AND
                             {$this->_aliases['civicrm_phone_b']}.is_primary = 1 )";
     }
@@ -365,7 +366,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
             $op = $this->_params["{$fieldName}_op"] ?? NULL;
             if ($op) {
               if (($tableName == 'civicrm_contact_a' ||
-                  $tableName == 'civicrm_contact') &&
+                  $tableName == 'civicrm_contact_b') &&
                 ($fieldName == 'contact_type_a' ||
                   $fieldName == 'contact_type_b')
               ) {
@@ -440,7 +441,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
         }
       }
     }
-    $this->_where = "WHERE ( {$this->_aliases['civicrm_contact_a']}.is_deleted = 0 AND {$this->_aliases['civicrm_contact']}.is_deleted = 0 ) ";
+    $this->_where = "WHERE ( {$this->_aliases['civicrm_contact_a']}.is_deleted = 0 AND {$this->_aliases['civicrm_contact_b']}.is_deleted = 0 ) ";
     if ($whereClauses) {
       $this->_where .= ' AND ' . implode(' AND ', $whereClauses);
     }
@@ -512,7 +513,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
       $groupBy[] = " {$this->_aliases['civicrm_contact_a']}.id";
     }
     elseif ($this->relationType == 'b_a') {
-      $groupBy[] = " {$this->_aliases['civicrm_contact']}.id";
+      $groupBy[] = " {$this->_aliases['civicrm_contact_b']}.id";
     }
 
     if (!empty($groupBy)) {
@@ -547,7 +548,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
 
     $this->buildACLClause([
       $this->_aliases['civicrm_contact_a'],
-      $this->_aliases['civicrm_contact'],
+      $this->_aliases['civicrm_contact_b'],
     ], FALSE); // We won't check view all contacts persmision
     // Don't check permissions - the report fine-tunes this.
     $sql = $this->buildQuery(TRUE,FALSE);
