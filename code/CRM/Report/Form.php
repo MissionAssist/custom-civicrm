@@ -3782,7 +3782,8 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       $smartGroupQuery = " UNION DISTINCT
                   SELECT DISTINCT smartgroup_contact.contact_id
                   FROM civicrm_group_contact_cache smartgroup_contact
-                  WHERE smartgroup_contact.group_id IN ({$smartGroups}) ";
+                  INNER JOIN `civicrm_group` AS `group` ON `group`.id = smartgroup_contact.group_id
+                  WHERE smartgroup_contact.group_id IN ({$smartGroups}) {$aclFilter}";
     }
 
     $sqlOp = $this->getSQLOperator($op);
