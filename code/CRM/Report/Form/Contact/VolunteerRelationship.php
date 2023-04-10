@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 21 September 2022
+ *  Last modified by Stephen Palmstrom 10 April 2023
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -549,7 +549,7 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
     $this->buildACLClause([
       $this->_aliases['civicrm_contact_a'],
       $this->_aliases['civicrm_contact_b'],
-    ], FALSE); // We won't check view all contacts persmision
+    ], FALSE); // We won't check view all contacts permission
     // Don't check permissions - the report fine-tunes this.
     $sql = $this->buildQuery(TRUE,FALSE);
     $this->buildRows($sql, $rows);
@@ -655,28 +655,28 @@ class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
 
       // Handle contact name B
       // @todo refactor into separate function
-      if (array_key_exists('civicrm_contact_sort_name_b', $row) &&
-        array_key_exists('civicrm_contact_id', $row)
+      if (array_key_exists('civicrm_contact_b_sort_name_b', $row) &&
+        array_key_exists('civicrm_contact_b_id', $row)
       ) {
         if (CRM_Core_Permission::check('administer users') ||
          CRM_Core_Permission::check('view all contacts')
         // || CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_id'])
-                ) {
+          ) {
 
-        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_id'];
-        $rows[$rowNum]['civicrm_contact_sort_name_b']
-          = $rows[$rowNum]['civicrm_contact_sort_name_b'] . ' (' .
+        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_b_id'];
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b']
+          = $rows[$rowNum]['civicrm_contact_b_sort_name_b'] . ' (' .
           $rows[$rowNum]['civicrm_contact_id'] . ')';
-        $rows[$rowNum]['civicrm_contact_sort_name_b_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_b_hover'] = ts('View Individual');
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Individual');
    
       } else {
-        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_id'] ."&gid=" . $individualID;
-        $rows[$rowNum]['civicrm_contact_sort_name_b']
-          = $rows[$rowNum]['civicrm_contact_sort_name_b'] . ' (' .
+        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_b_id'] ."&gid=" . $individualID;
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b']
+          = $rows[$rowNum]['civicrm_contact_b_sort_name_b'] . ' (' .
           $rows[$rowNum]['civicrm_contact_id'] . ')';
-        $rows[$rowNum]['civicrm_contact_sort_name_b_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_b_hover'] = ts('View Contact Profile');
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Contact Profile');
       }
         $entryFound = TRUE;
       }
