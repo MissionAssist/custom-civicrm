@@ -24,7 +24,7 @@
  * This means that we do not check if the user as View All Contacts since we
  * provide limited contact information.
  */
-class CRM_Report_Form_Contact_VolunteerRelationship extends CRM_Report_Form {
+class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
   protected $_summary = NULL;
   protected $_emailField_a = FALSE;
