@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 10 April 2023
+ *  Last modified by Stephen Palmstrom 29 May 2023
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -61,7 +61,57 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
   public function __construct() {
 
     $contact_type = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, TRUE, '_');
+
     $this->_columns = [
+      'civicrm_contact' => [
+        'dao' => 'CRM_Contact_DAO_Contact',
+        'fields' => [
+          'sort_name_a' => [
+            'title' => ts('Contact A'),
+            'name' => 'sort_name',
+            'required' => TRUE,
+          ],
+          'display_name_a' => [
+            'title' => ts('Contact A Full Name'),
+            'name' => 'display_name',
+          ],
+          'id' => [
+            'no_display' => TRUE,
+            'required' => TRUE,
+          ],
+          'contact_type_a' => [
+            'title' => ts('Contact Type (Contact A)'),
+            'name' => 'contact_type',
+          ],
+          'contact_sub_type_a' => [
+            'title' => ts('Contact Subtype (Contact A)'),
+            'name' => 'contact_sub_type',
+          ],
+        ],
+        'filters' => [
+          'sort_name_a' => [
+            'title' => ts('Contact A'),
+            'name' => 'sort_name',
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ],
+          'contact_type_a' => [
+            'title' => ts('Contact Type A'),
+            'name' => 'contact_type',
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => $contact_type,
+            'type' => CRM_Utils_Type::T_STRING,
+          ],
+        ],
+        'order_bys' => [
+          'sort_name_a' => [
+            'title' => ts('Contact A'),
+            'name' => 'sort_name',
+            'default_weight' => '1',
+          ],
+        ],
+        'grouping' => 'contact_a_fields',
+      ],
       'civicrm_contact_b' => [
         'dao' => 'CRM_Contact_DAO_Contact',
         'alias' => 'contact_b',          
@@ -79,7 +129,15 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'no_display' => TRUE,
             'required' => TRUE,
           ],
+          'contact_type_b' => [
+            'title' => ts('Contact Type (Contact B)'),
+            'name' => 'contact_type',
        ],
+          'contact_sub_type_b' => [
+            'title' => ts('Contact Subtype (Contact B)'),
+            'name' => 'contact_sub_type',
+          ],
+        ],
         'filters' => [
           'sort_name_b' => [
             'title' => ts('Name'),
@@ -114,6 +172,16 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         ],
         'grouping' => 'contact_b_fields',
       ],
+      'civicrm_email' => [
+        'dao' => 'CRM_Core_DAO_Email',
+        'fields' => [
+          'email_a' => [
+            'title' => ts('Email (Contact A)'),
+            'name' => 'email',
+          ],
+        ],
+        'grouping' => 'contact_a_fields',
+      ],
       'civicrm_email_b' => [
         'dao' => 'CRM_Core_DAO_Email',
         'alias' => 'email_b',
@@ -125,17 +193,54 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         ],
         'grouping' => 'contact_b_fields',
       ],
-
+      'civicrm_phone' => [
+        'dao' => 'CRM_Core_DAO_Phone',
+        'alias' => 'phone_a',
+        'fields' => [
+          'phone_a' => [
+            'title' => ts('Phone (Contact A)'),
+            'name' => 'phone',
+          ],
+          'phone_ext_a' => [
+            'title' => ts('Phone Ext (Contact A)'),
+            'name' => 'phone_ext',
+          ],
+        ],
+        'grouping' => 'contact_a_fields',
+      ],
+      'civicrm_phone_b' => [
+        'dao' => 'CRM_Core_DAO_Phone',
+        'alias' => 'phone_b',
+        'fields' => [
+          'phone_b' => [
+            'title' => ts('Phone (Contact B)'),
+            'name' => 'phone',
+          ],
+          'phone_ext_b' => [
+            'title' => ts('Phone Ext (Contact B)'),
+            'name' => 'phone_ext',
+          ],
+        ],
+        'grouping' => 'contact_b_fields',
+      ],
       'civicrm_relationship_type' => [
         'dao' => 'CRM_Contact_DAO_RelationshipType',
         'fields' => [
+          'label_a_b' => [
+            'title' => ts('Relationship A-B '),
+            'default' => TRUE,
+          ],
           'label_b_a' => [
             'title' => ts('Relationship'),
             'default' => TRUE,
           ],
         ],
         'order_bys' => [
-          'label_b_a' => [
+          'label_a_b' => [
+            'title' => ts('Relationship A-B'),
+            'name' => 'label_a_b',
+          ],
+          'label_b_A' => [
             'title' => ts('Relationship B-A'),
             'name' => 'label_b_a',
           ],
@@ -146,8 +251,28 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       'civicrm_relationship' => [
         'dao' => 'CRM_Contact_DAO_Relationship',
         'fields' => [
+          'start_date' => [
+            'title' => ts('Relationship Start Date'),
+          ],
+          'end_date' => [
+            'title' => ts('Relationship End Date'),
+          ],
+          'is_permission_a_b' => [
+            'title' => ts('Permission A has to access B'),
+          ],
+          'is_permission_b_a' => [
+            'title' => ts('Permission B has to access A'),
+          ],
           'description' => [
             'title' => ts('Description'),
+          ],
+          'is_active' => [
+            'title' => ts('Is active?'),
+            'type' => CRM_Utils_Type::T_BOOLEAN,
+        ],
+          'relationship_id' => [
+            'title' => ts('Rel ID'),
+            'name' => 'id',
           ],
         ],
         'filters' => [
@@ -155,16 +280,22 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'title' => ts('Relationship Status'),
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => [
+              '' => ts('- Any -'),
               1 => ts('Active'),
+              0 => ts('Inactive'),
             ],
+            'default' => ts('Active'),
             'type' => CRM_Utils_Type::T_INT,
           ],
           'is_valid' => [
             'title' => ts('Relationship Dates Validity'),
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => [
+              NULL => ts('- Any -'),
               1 => ts('Not expired'),
+              0 => ts('Expired'),
             ],
+            'default' => ts('Not expired'),
             'type' => CRM_Utils_Type::T_INT,
           ],
           'relationship_type_id' => [
@@ -173,76 +304,62 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'options' => CRM_Contact_BAO_Relationship::getContactRelationshipType(NULL, NULL, NULL, NULL, TRUE),
             'type' => CRM_Utils_Type::T_INT,
           ],
+          'start_date' => [
+            'title' => ts('Start Date'),
+            'type' => CRM_Utils_Type::T_DATE,
         ],
+          'end_date' => [
+            'title' => ts('End Date'),
+            'type' => CRM_Utils_Type::T_DATE,
       ],
-
-      'civicrm_contact_a' => [
-        'dao' => 'CRM_Contact_DAO_Contact',
-        'alias' => 'contact_a',
-        'fields' => [
-          'sort_name_a' => [
-            'title' => ts('Team'),
-            'name' => 'sort_name',
-            'required' => TRUE,
+          'active_period_date' => [
+            'title' => ts('Active Period'),
+            'type' => CRM_Utils_Type::T_DATE,
           ],
-          'display_name_a' => [
-            'title' => ts('Team Full Name'),
-            'name' => 'display_name',
-          ],
-          'id' => [
-            'no_display' => TRUE,
-            'required' => TRUE,
-          ],
-        ],
-        'filters' => [
-          'sort_name_a' => [
-            'title' => ts('Team'),
-            'name' => 'sort_name',
-            'operator' => 'like',
-            'type' => CRM_Report_Form::OP_STRING,
-          ],
-          'contact_type_a' => [
-            'title' => ts('Contact Type A'),
-            'name' => 'contact_type',
+          'is_permission_a_b' => [
+            'title' => ts('Does contact A have permission over contact B?'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => $contact_type,
-            'type' => CRM_Utils_Type::T_STRING,
-            'default' => 'Organization',
+            'options' => CRM_Contact_BAO_Relationship::buildOptions('is_permission_a_b'),
+            'type' => CRM_Utils_Type::T_INT,
+          ],
+          'is_permission_b_a' => [
+            'title' => ts('Does contact B have permission over contact A?'),
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Contact_BAO_Relationship::buildOptions('is_permission_b_a'),
+            'type' => CRM_Utils_Type::T_INT,
           ],
         ],
+
         'order_bys' => [
-          'sort_name_a' => [
-            'title' => ts('Team'),
-            'name' => 'sort_name',
-            'default_weight' => '2',
+          'start_date' => [
+            'title' => ts('Start Date'),
+            'name' => 'start_date',
           ],
+          'end_date' => [
+            'title' => ts('End Date'),
+            'name' => 'end_date',
         ],
-        'grouping' => 'contact_a_fields',
       ],
-      'civicrm_email_a' => [
-        'dao' => 'CRM_Core_DAO_Email',
-        'alias' => 'email_a',
-        'fields' => [
-          'email_a' => [
-            'title' => ts('Team Email'),
-            'name' => 'email',
+        'grouping' => 'relation-fields',
           ],
+      'civicrm_address' => [
+        'dao' => 'CRM_Core_DAO_Address',
+        'filters' => [
+          'country_id' => [
+            'title' => ts('Country'),
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::country(),
         ],
-        'grouping' => 'contact_a_fields',
+          'state_province_id' => [
+            'title' => ts('State/Province'),
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::stateProvince(),
       ],
-
-      'civicrm_phone_b' => [
-        'dao' => 'CRM_Core_DAO_Phone',
-        'alias' => 'phone_b',
-        'fields' => [
-          'phone_b' => [
-            'title' => ts('Primary Phone'),
-            'name' => 'phone',
           ],
+        'grouping' => 'contact-fields',
         ],
-        'grouping' => 'contact_b_fields',
-      ],
-
     ];
 
     $this->_groupFilter = TRUE;
@@ -262,11 +379,15 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           if (!empty($field['required']) ||
             !empty($this->_params['fields'][$fieldName])
           ) {
+
+            if ($fieldName == 'email_a') {
+              $this->_emailField_a = TRUE;
+            }
             if ($fieldName == 'email_b') {
               $this->_emailField_b = TRUE;
             }
-            if ($fieldName == 'email_a') {
-              $this->_emailField_a = TRUE;
+            if ($fieldName == 'phone_a') {
+              $this->_phoneField_a = TRUE;
             }
             if ($fieldName == 'phone_b') {
               $this->_phoneField_b = TRUE;
@@ -287,13 +408,13 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
     $this->_from = "
         FROM civicrm_relationship {$this->_aliases['civicrm_relationship']}
 
+             INNER JOIN civicrm_contact {$this->_aliases['civicrm_contact']}
+                        ON ( {$this->_aliases['civicrm_relationship']}.contact_id_a =
+                             {$this->_aliases['civicrm_contact']}.id )
+
              INNER JOIN civicrm_contact {$this->_aliases['civicrm_contact_b']}
                         ON ( {$this->_aliases['civicrm_relationship']}.contact_id_b =
                              {$this->_aliases['civicrm_contact_b']}.id )
-
-             INNER JOIN civicrm_contact {$this->_aliases['civicrm_contact_a']}
-                        ON ( {$this->_aliases['civicrm_relationship']}.contact_id_a =
-                             {$this->_aliases['civicrm_contact_a']}.id )
 
              {$this->_aclFrom} ";
 
@@ -303,9 +424,9 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       $this->_from .= "
             INNER  JOIN civicrm_address {$this->_aliases['civicrm_address']}
                          ON (( {$this->_aliases['civicrm_address']}.contact_id =
-                               {$this->_aliases['civicrm_contact_b']}.id  OR
+                               {$this->_aliases['civicrm_contact']}.id  OR
                                {$this->_aliases['civicrm_address']}.contact_id =
-                               {$this->_aliases['civicrm_contact_a']}.id ) AND
+                               {$this->_aliases['civicrm_contact_b']}.id ) AND
                                {$this->_aliases['civicrm_address']}.is_primary = 1 ) ";
     }
 
@@ -316,12 +437,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
     // Include Email Field.
     if ($this->_emailField_a) {
-      $this->_from .= "
-             LEFT JOIN civicrm_email {$this->_aliases['civicrm_email_a']}
-                       ON ( {$this->_aliases['civicrm_contact_a']}.id =
-                            {$this->_aliases['civicrm_email_a']}.contact_id AND
-                            {$this->_aliases['civicrm_email_a']}.is_primary = 1 )";
-
+      $this->joinEmailFromContact();
     }
     if ($this->_emailField_b) {
       $this->_from .= "
@@ -365,7 +481,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           else {
             $op = $this->_params["{$fieldName}_op"] ?? NULL;
             if ($op) {
-              if (($tableName == 'civicrm_contact_a' ||
+              if (($tableName == 'civicrm_contact' ||
                   $tableName == 'civicrm_contact_b') &&
                 ($fieldName == 'contact_type_a' ||
                   $fieldName == 'contact_type_b')
@@ -441,7 +557,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         }
       }
     }
-    $this->_where = "WHERE ( {$this->_aliases['civicrm_contact_a']}.is_deleted = 0 AND {$this->_aliases['civicrm_contact_b']}.is_deleted = 0 ) ";
+    $this->_where = "WHERE ( {$this->_aliases['civicrm_contact']}.is_deleted = 0 AND {$this->_aliases['civicrm_contact_b']}.is_deleted = 0 ) ";
     if ($whereClauses) {
       $this->_where .= ' AND ' . implode(' AND ', $whereClauses);
     }
@@ -547,7 +663,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
     $this->beginPostProcess();
 
     $this->buildACLClause([
-      $this->_aliases['civicrm_contact_a'],
+      $this->_aliases['civicrm_contact'],
       $this->_aliases['civicrm_contact_b'],
     ], FALSE); // We won't check view all contacts permission
     // Don't check permissions - the report fine-tunes this.
@@ -570,23 +686,6 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
   public function alterDisplay(&$rows) {
     // Custom code to alter rows.
     $entryFound = FALSE;
-    // Find the individual profile by looking it up by name. This ensures portability
-    // beween systems.
-    $uFGroups = \Civi\Api4\UFGroup::get(FALSE)
-        ->addSelect('id')
-        ->addWhere('title', '=', 'Contact Summary')
-        ->setLimit(1)
-        ->execute();
-      $individualID = $uFGroups[0]['id'];
-    // Find the organisation profile
-    $uFGroups = \Civi\Api4\UFGroup::get(FALSE)
-        ->addSelect('id')
-        ->addWhere('title', '=', 'Organisation Summary')
-        ->setLimit(1)
-        ->execute();
-      $organisationID = $uFGroups[0]['id'];
-
-    
 
     foreach ($rows as $rowNum => $row) {
 
@@ -611,8 +710,8 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
       // Handle contact subtype B
       // @todo refactor into separate function
-      if (array_key_exists('civicrm_contact_contact_sub_type_b', $row)) {
-        if ($value = $row['civicrm_contact_contact_sub_type_b']) {
+      if (array_key_exists('civicrm_contact_b_contact_sub_type_b', $row)) {
+        if ($value = $row['civicrm_contact_b_contact_sub_type_b']) {
           $rowValues = explode(CRM_Core_DAO::VALUE_SEPARATOR, $value);
           $rowLabels = [];
           foreach ($rowValues as $rowValue) {
@@ -620,7 +719,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
               $rowLabels[] = CRM_Core_PseudoConstant::getLabel('CRM_Contact_BAO_Contact', 'contact_sub_type', $rowValue);
             }
           }
-          $rows[$rowNum]['civicrm_contact_contact_sub_type_b'] = implode(', ', $rowLabels);
+          $rows[$rowNum]['civicrm_contact_b_contact_sub_type_b'] = implode(', ', $rowLabels);
         }
         $entryFound = TRUE;
       }
@@ -629,26 +728,26 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
       // Handle contact name A
       // @todo refactor into separate function
-      if (array_key_exists('civicrm_contact_a_sort_name_a', $row) &&
-        array_key_exists('civicrm_contact_a_id', $row)
+      if (array_key_exists('civicrm_contact_sort_name_a', $row) &&
+        array_key_exists('civicrm_contact_id', $row)
       ) {
         if (CRM_Core_Permission::check('administer users') ||
                 CRM_Core_Permission::check('view all contacts')
-                //|| CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_a_id'])
+                //|| CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_id'])
                 ) {
-        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_a_id'];
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a']
-          = $rows[$rowNum]['civicrm_contact_a_sort_name_a'] . ' (' .
-          $rows[$rowNum]['civicrm_contact_a_id'] . ')';
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a_hover'] = ts('View Organisation');    
+        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_id'];
+        $rows[$rowNum]['civicrm_contact_sort_name_a']
+          = $rows[$rowNum]['civicrm_contact_sort_name_a'] . ' (' .
+          $rows[$rowNum]['civicrm_contact_id'] . ')';
+        $rows[$rowNum]['civicrm_contact_sort_name_a_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Organisation');    
         } else {
-        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_a_id'] . "&gid=" . $organisationID;
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a']
-          = $rows[$rowNum]['civicrm_contact_a_sort_name_a'] . ' (' .
-          $rows[$rowNum]['civicrm_contact_a_id'] . ')';
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_a_sort_name_a_hover'] = ts('View Profile for this organisation');
+        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_id'] . "&gid=" . $organisationID;
+        $rows[$rowNum]['civicrm_contact_sort_name_a']
+          = $rows[$rowNum]['civicrm_contact_sort_name_a'] . ' (' .
+          $rows[$rowNum]['civicrm_contact_id'] . ')';
+        $rows[$rowNum]['civicrm_contact_sort_name_a_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Profile for this organisation');
         }
         $entryFound = TRUE;
       }
@@ -683,10 +782,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
       // Handle relationship
       if (array_key_exists('civicrm_relationship_relationship_id', $row) &&
-        array_key_exists('civicrm_contact_a_id', $row)
+        array_key_exists('civicrm_contact_id', $row)
       ) {
         $url = "/civicrm/contact/view/rel?reset=1&action=update&rtype=a_b&cid=" .
-          $row['civicrm_contact_a_id'] . "&id=" .
+          $row['civicrm_contact_id'] . "&id=" .
           $row['civicrm_relationship_relationship_id'];
         $rows[$rowNum]['civicrm_relationship_relationship_id_link'] = $url;
         $rows[$rowNum]['civicrm_relationship_relationship_id_hover'] = ts("Edit this relationship.");
