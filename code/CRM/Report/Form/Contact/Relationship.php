@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 29 May 2023
+ *  Last modified by Stephen Palmstrom 31 May 2023
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -661,11 +661,13 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
   public function postProcess() {
     $this->beginPostProcess();
-
+    /*
     $this->buildACLClause([
       $this->_aliases['civicrm_contact'],
       $this->_aliases['civicrm_contact_b'],
     ], FALSE); // We won't check view all contacts permission
+     * 
+     */
     // Don't check permissions - the report fine-tunes this.
     $sql = $this->buildQuery(TRUE,FALSE);
     $this->buildRows($sql, $rows);
@@ -686,6 +688,23 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
   public function alterDisplay(&$rows) {
     // Custom code to alter rows.
     $entryFound = FALSE;
+    // Find the individual profile by looking it up by name. This ensures portability
+    // beween systems.
+    $uFGroups = \Civi\Api4\UFGroup::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('title', '=', 'Contact Summary')
+        ->setLimit(1)
+        ->execute();
+      $individualID = $uFGroups[0]['id'];
+    // Find the organisation profile
+    $uFGroups = \Civi\Api4\UFGroup::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('title', '=', 'Organisation Summary')
+        ->setLimit(1)
+        ->execute();
+      $organisationID = $uFGroups[0]['id'];
+
+    
 
     foreach ($rows as $rowNum => $row) {
 
