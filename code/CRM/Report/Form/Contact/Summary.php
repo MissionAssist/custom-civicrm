@@ -7,6 +7,7 @@
  | permitted exceptions and without any warranty. For full license    |
  | and copyright information, see https://civicrm.org/licensing       |
  +--------------------------------------------------------------------+
+ * Last modified 2 June 2023 by Stephen Palmstrom
  */
 
 /**
@@ -167,6 +168,15 @@ class CRM_Report_Form_Contact_Summary extends CRM_Report_Form {
    */
   public function alterDisplay(&$rows) {
     $entryFound = FALSE;
+    // MissionAssist
+    // Find the individual profile by looking it up by name. This ensures portability
+    // beween systems.
+    $uFGroups = \Civi\Api4\UFGroup::get(FALSE)
+        ->addSelect('id')
+        ->addWhere('title', '=', 'Supporter Profile')
+        ->setLimit(1)
+        ->execute();
+      $profileID = $uFGroups[0]['id'];
 
     foreach ($rows as $rowNum => $row) {
       // make count columns point to detail report
@@ -188,7 +198,7 @@ class CRM_Report_Form_Contact_Summary extends CRM_Report_Form {
             $rows[$rowNum]['civicrm_contact_id'] . ')';
           $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts('View Contact');    
         } else {
-          $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_id'] . "&gid=" . $organisationID;
+          $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_id'] . "&gid=" . $profileID;
           $rows[$rowNum]['civicrm_contact_sort_name']
             = $rows[$rowNum]['civicrm_contact_sort_name'] . ' (' .
             $rows[$rowNum]['civicrm_contact_id'] . ')';
@@ -196,6 +206,7 @@ class CRM_Report_Form_Contact_Summary extends CRM_Report_Form {
         }
 
         $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts('View Contact Detail Report for this contact');
         $entryFound = TRUE;
       }
 
