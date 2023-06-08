@@ -152,7 +152,7 @@ class CRM_Report_Form_Event_ParticipantListing extends CRM_Report_Form {
             'name' => 'created_id',
           ),
           'source' => array(
-            'title' => ts('Participant Source'),
+            'title' => ts('Source'),
           ),
           'participant_fee_level' => NULL,
           'participant_fee_amount' => array('title' => ts('Participant Fee')),
@@ -211,7 +211,7 @@ class CRM_Report_Form_Event_ParticipantListing extends CRM_Report_Form {
             'operator' => 'like',
           ),
           'source' => array(
-            'title' => ts('Participant Source'),
+            'title' => ts('Source'),
             'type' => CRM_Utils_Type::T_STRING,
             'operator' => 'like',
           ),
@@ -679,6 +679,7 @@ ORDER BY  cv.label
           $url = CRM_Utils_System::url('civicrm/contact/view',
             "action=view&reset=1&id=$id&cid=$cid&context=home"
             );
+
         $viewUrl = CRM_Utils_System::url("civicrm/contact/view/participant",
           "reset=1&id=$id&cid=$cid&action=view&context=participant"
         );

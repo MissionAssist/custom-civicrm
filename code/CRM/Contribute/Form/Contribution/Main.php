@@ -108,11 +108,8 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       $qParams .= "&amp;pcpId={$pcpId}";
     }
     $this->assign('qParams', $qParams);
-
-    if (!empty($this->_values['footer_text'])) {
-      $this->assign('footer_text', $this->_values['footer_text']);
+    $this->assign('footer_text', $this->_values['footer_text'] ?? NULL);
     }
-  }
 
   /**
    * Set the default values.
@@ -123,7 +120,6 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
 
     if (!empty($contactID)) {
       $fields = [];
-      $removeCustomFieldTypes = ['Contribution', 'Membership'];
       $contribFields = CRM_Contribute_BAO_Contribution::getContributionFields();
 
       // remove component related fields
@@ -131,7 +127,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         //don't set custom data Used for Contribution (CRM-1344)
         if (substr($name, 0, 7) == 'custom_') {
           $id = substr($name, 7);
-          if (!CRM_Core_BAO_CustomGroup::checkCustomField($id, $removeCustomFieldTypes)) {
+          if (!CRM_Core_BAO_CustomGroup::checkCustomField($id, ['Contribution', 'Membership'])) {
             continue;
           }
           // ignore component fields
@@ -433,7 +429,6 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       $prms = ['id' => $this->_pcpId];
       CRM_Core_DAO::commonRetrieve('CRM_PCP_DAO_PCP', $prms, $pcpInfo);
       if ($pcpInfo['is_honor_roll']) {
-        $this->assign('isHonor', TRUE);
         $this->add('checkbox', 'pcp_display_in_roll', ts('Show my contribution in the public honor roll'), NULL, NULL,
           ['onclick' => "showHideByValue('pcp_display_in_roll','','nameID|nickID|personalNoteID','block','radio',false); pcpAnonymous( );"]
         );
@@ -514,14 +509,13 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
 
       $membershipTypeIds = $membershipTypes = $radio = $radioOptAttrs = [];
       // This is always true if this line is reachable - remove along with the upcoming if.
-      $membershipPriceset = (!empty($this->_priceSetId) && $this->isMembershipPriceSet());
+      $membershipPriceset = TRUE;
 
       $allowAutoRenewMembership = $autoRenewOption = FALSE;
       $autoRenewMembershipTypeOptions = [];
 
       $separateMembershipPayment = $this->_membershipBlock['is_separate_payment'] ?? NULL;
 
-      if ($membershipPriceset) {
         foreach ($this->_priceSet['fields'] as $pField) {
           if (empty($pField['options'])) {
             continue;
@@ -533,13 +527,11 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
             $membershipTypeIds[$opValues['membership_type_id']] = $opValues['membership_type_id'];
           }
         }
-      }
-      elseif (!empty($this->_membershipBlock['membership_types'])) {
-        $membershipTypeIds = explode(',', $this->_membershipBlock['membership_types']);
-      }
 
       if (!empty($membershipTypeIds)) {
         //set status message if wrong membershipType is included in membershipBlock
+        // @todo - this appears to be unreachable - it seems likely it has been broken for
+        // a while so remove may be an OK alternative to fix
         if ($this->getRenewalMembershipID() && !$membershipPriceset) {
           $membershipTypeID = CRM_Core_DAO::getFieldValue('CRM_Member_DAO_Membership',
             $this->getRenewalMembershipID(),

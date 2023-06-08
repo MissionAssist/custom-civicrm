@@ -167,7 +167,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'sort_name_b' => [
             'title' => ts('Name'),
             'name' => 'sort_name',
-            'default_weight' => '1',
+            'default_weight' => '2',
           ],
         ],
         'grouping' => 'contact_b_fields',
@@ -247,7 +247,6 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         ],
         'grouping' => 'relation-fields',
       ],
-
       'civicrm_relationship' => [
         'dao' => 'CRM_Contact_DAO_Relationship',
         'fields' => [
