@@ -625,7 +625,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
     $this->_groupBy = " ";
     $groupBy = [];
     if ($this->relationType == 'a_b') {
-      $groupBy[] = " {$this->_aliases['civicrm_contact_a']}.id";
+      $groupBy[] = " {$this->_aliases['civicrm_contact']}.id";
     }
     elseif ($this->relationType == 'b_a') {
       $groupBy[] = " {$this->_aliases['civicrm_contact_b']}.id";
