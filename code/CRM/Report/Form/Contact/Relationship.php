@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 31 May 2023
+ *  Last modified by Stephen Palmstrom 10 July 2023
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -783,7 +783,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_b_id'];
         $rows[$rowNum]['civicrm_contact_b_sort_name_b']
           = $rows[$rowNum]['civicrm_contact_b_sort_name_b'] . ' (' .
-          $rows[$rowNum]['civicrm_contact_id'] . ')';
+          $rows[$rowNum]['civicrm_contact_b_id'] . ')';
         $rows[$rowNum]['civicrm_contact_b_sort_name_b_link'] = $url;
         $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Individual');
    

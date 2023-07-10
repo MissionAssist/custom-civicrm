@@ -553,6 +553,14 @@ class CRM_Report_Form extends CRM_Core_Form {
   protected $_charts = [];
 
   /**
+   * Array of campaign data,
+   * populated by calling `$this::addCampaignFields()`
+   *
+   * @var array
+   */
+  protected $campaigns = [];
+
+  /**
    * @var \Civi\Report\OutputHandlerInterface
    */
   private $outputHandler;
@@ -2565,14 +2573,14 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
               if (array_key_exists('alter_display', $specs)) {
                 $alterFunctions[$tableName . '_' . $field] = $specs['alter_display'];
                 $alterMap[$tableName . '_' . $field] = $field;
-                $alterSpecs[$tableName . '_' . $field] = NULL;
+                $alterSpecs[$tableName . '_' . $field] = $specs;
               }
               // Add any alters that can be intuited from the field specs.
               // So far only boolean but a lot more could be.
               if (empty($alterSpecs[$tableName . '_' . $field]) && isset($specs['type']) && $specs['type'] == CRM_Utils_Type::T_BOOLEAN) {
                 $alterFunctions[$tableName . '_' . $field] = 'alterBoolean';
                 $alterMap[$tableName . '_' . $field] = $field;
-                $alterSpecs[$tableName . '_' . $field] = NULL;
+                $alterSpecs[$tableName . '_' . $field] = $specs;
               }
             }
           }
