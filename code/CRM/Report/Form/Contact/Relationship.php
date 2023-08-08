@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 10 July 2023
+ *  Last modified by Stephen Palmstrom 8 August 2023
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -67,7 +67,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' => [
           'sort_name_a' => [
-            'title' => ts('Contact A'),
+            'title' => ts('Organisation'),
             'name' => 'sort_name',
             'required' => TRUE,
           ],
@@ -584,10 +584,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
     $isStatusFilter = FALSE;
     $relStatus = NULL;
-    if (CRM_Utils_Array::value('is_active_value', $this->_params) == '1') {
+    if (($this->_params['is_active_value'] ?? NULL) == '1') {
       $relStatus = ts('Is equal to Active');
     }
-    elseif (CRM_Utils_Array::value('is_active_value', $this->_params) == '0') {
+    elseif (($this->_params['is_active_value'] ?? NULL) == '0') {
       $relStatus = ts('Is equal to Inactive');
     }
     if (!empty($statistics['filters'])) {
@@ -595,7 +595,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         // For displaying relationship type filter.
         if ($value['title'] == 'Relationship') {
           $relTypes = CRM_Core_PseudoConstant::relationshipType();
-          $op = CRM_Utils_Array::value('relationship_type_id_op', $this->_params) == 'in' ? ts('Is one of') . ' ' : ts('Is not one of') . ' ';
+          $op = ($this->_params['relationship_type_id_op'] ?? NULL) == 'in' ? ts('Is one of') . ' ' : ts('Is not one of') . ' ';
           $relationshipTypes = [];
           foreach ($this->_params['relationship_type_id_value'] as $relationship) {
             $relationshipTypes[] = $relTypes[$relationship]['label_' . $this->relationType];
@@ -813,13 +813,13 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       // Handle permissioned relationships
       if (array_key_exists('civicrm_relationship_is_permission_a_b', $row)) {
         $rows[$rowNum]['civicrm_relationship_is_permission_a_b']
-          = ts(self::permissionedRelationship($row['civicrm_relationship_is_permission_a_b']));
+          = _ts(self::permissionedRelationship($row['civicrm_relationship_is_permission_a_b']));
         $entryFound = TRUE;
       }
 
       if (array_key_exists('civicrm_relationship_is_permission_b_a', $row)) {
         $rows[$rowNum]['civicrm_relationship_is_permission_b_a']
-          = ts(self::permissionedRelationship($row['civicrm_relationship_is_permission_b_a']));
+          = _ts(self::permissionedRelationship($row['civicrm_relationship_is_permission_b_a']));
         $entryFound = TRUE;
       }
 
