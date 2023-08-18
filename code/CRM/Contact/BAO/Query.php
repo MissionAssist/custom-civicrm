@@ -6997,8 +6997,8 @@ AND   displayRelType.is_active = 1
    */
   protected function isPseudoFieldAnFK($fieldSpec) {
     if (empty($fieldSpec['FKClassName'])
-      || CRM_Utils_Array::value('keyColumn', $fieldSpec['pseudoconstant']) !== 'id'
-      || CRM_Utils_Array::value('labelColumn', $fieldSpec['pseudoconstant']) !== 'name') {
+      || ($fieldSpec['pseudoconstant']['keyColumn'] ?? NULL) !== 'id'
+      || ($fieldSpec['pseudoconstant']['labelColumn'] ?? NULL) !== 'name') {
       return FALSE;
     }
     return TRUE;

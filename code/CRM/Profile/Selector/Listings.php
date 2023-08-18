@@ -578,7 +578,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       }
       $row = [];
       $empty = TRUE;
-      // Find out if we can the details of the contact.
+      // Find out if we can view the details of the contact.
       $contactIds = array();
       $contactIds[] = $result->contact_id;
       $newIds = CRM_Contact_BAO_Contact_Permission::allowList($contactIds);
