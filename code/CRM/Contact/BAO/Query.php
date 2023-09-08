@@ -1643,7 +1643,8 @@ class CRM_Contact_BAO_Query {
         }
       }
       elseif ($id === 'email_on_hold') {
-        if ($onHoldValue = CRM_Utils_Array::value('email_on_hold', $formValues)) {
+        $onHoldValue = $formValues['email_on_hold'] ?? NULL;
+        if ($onHoldValue) {
           // onHoldValue should be 0 or 1 or an array. Some legacy groups may hold ''
           // so in 5.11 we have an extra if that should become redundant over time.
           // https://lab.civicrm.org/dev/core/issues/745
@@ -2665,7 +2666,7 @@ class CRM_Contact_BAO_Query {
    * @param string $primaryLocation
    * @return string
    */
-  protected static function getEntitySpecificJoins($name, $mode, $side, $primaryLocation) {
+  protected static function getEntitySpecificJoins($name, $mode, $side, $primaryLocation): string {
     $limitToPrimaryClause = $primaryLocation ? "AND {$name}.is_primary = 1" : '';
     switch ($name) {
       case 'civicrm_address':
@@ -2727,7 +2728,7 @@ class CRM_Contact_BAO_Query {
       case 'civicrm_activity_contact':
       case 'source_contact':
       case 'activity_priority':
-        return CRM_Activity_BAO_Query::from($name, $mode, $side);
+        return CRM_Activity_BAO_Query::from($name, $mode, $side) ?? '';
 
       case 'civicrm_entity_tag':
         $from = " $side JOIN civicrm_entity_tag ON ( civicrm_entity_tag.entity_table = 'civicrm_contact'";
@@ -6028,6 +6029,7 @@ AND   displayRelType.is_active = 1
           continue;
         }
 
+        $baoName = $value['bao'] ?? NULL;
         if (CRM_Utils_System::isNull($val)) {
           $dao->$key = NULL;
         }
@@ -6059,7 +6061,7 @@ AND   displayRelType.is_active = 1
             $dao->$key = CRM_Core_PseudoConstant::getLabel($value['bao'], $value['idCol'], $val);
           }
         }
-        elseif ($baoName = CRM_Utils_Array::value('bao', $value, NULL)) {
+        elseif ($baoName) {
           //preserve id value
           $idColumn = "{$key}_id";
           $dao->$idColumn = $val;
