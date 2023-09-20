@@ -119,6 +119,7 @@ class CRM_Logging_ReportDetail extends CRM_Report_Form {
    *
    * @param bool $applyLimit
    */
+  // MissionAssist adds $checkPermissions
   public function buildQuery($applyLimit = TRUE, $checkPermissions = TRUE) {
   }
 

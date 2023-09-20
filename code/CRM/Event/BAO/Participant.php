@@ -1030,7 +1030,8 @@ WHERE cpf.price_set_id = %1 AND cpfv.label LIKE %2";
   }
 
   /**
-   * Get the event fee info for given participant ids
+   * Start MissionAssist
+   * * Get the event fee info for given participant ids
    * either from line item table / participant table.
    *
    * @param array $participantIds
@@ -1104,7 +1105,7 @@ INNER JOIN civicrm_price_field_value value ON ( value.id = lineItem.price_field_
 
     return $feeDetails;
   }
-
+  // End MissionAssisst
   /**
    * Retrieve additional participants display-names and URL to view their participant records.
    * (excludes cancelled participants automatically)
@@ -1648,6 +1649,7 @@ UPDATE  civicrm_participant
     return FALSE;
   }
   /*
+   * Start MissionAssist
    *
    * return registered_by_id
    *
@@ -1667,6 +1669,7 @@ public static function getRegisteredByID($participantId) {
         return NULL;
     }
   }
+  // End MissionAssist
   /**
    * Get additional participant Ids for cascading with primary participant status.
    *

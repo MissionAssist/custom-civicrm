@@ -448,7 +448,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         'isDefault' => TRUE,
       ];
       if (!empty($this->_values['is_confirm_enabled'])) {
-          // MissionAssist
+          // MissionAssist changes contribution to application
         $submitButton['name'] = ts('Please review your application');
         $submitButton['icon'] = 'fa-chevron-right';
       }

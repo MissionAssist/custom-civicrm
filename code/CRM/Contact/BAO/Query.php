@@ -4421,8 +4421,9 @@ civicrm_relationship.start_date > {$today}
       $tableName = $forceTableName . '.';
     }
     else {
+      //End MissiionAssist
       $tableName = $forceTableName ? 'civicrm_relationship.' : '';
-    }
+    } //MissionAssist
 
     if (!is_null($from) && !is_null($to)) {
       return '(((' . $tableName . 'start_date >= ' . $from . ' AND ' . $tableName . 'start_date <= ' . $to . ') OR

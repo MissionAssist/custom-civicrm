@@ -366,7 +366,7 @@ class CRM_Profile_Page_Listings extends CRM_Core_Page {
       ) {
         $editLink = FALSE;
       }
-
+      // MissionAssist adds $this
       $selector = new CRM_Profile_Selector_Listings($this->_params, $this->_customFields, $gids,
         $map, $editLink, $linkToUF, $this
       );

@@ -437,6 +437,7 @@ WHERE  log_date <= %1 AND id = %2 ORDER BY log_date DESC LIMIT 1";
    *
    * @return string
    */
+   // MissionAssist adds $checkPermissions
   public function buildQuery($applyLimit = TRUE, $checkPermissions = TRUE) {
     if (!$this->logTypeTableClause) {
       return parent::buildQuery($applyLimit);

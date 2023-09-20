@@ -58,6 +58,7 @@
       </div>
     {/if}
   {else}
+      {*MissionAssist changes from transaction to application *}
     <div>{ts}Your application  has been processed successfully.{/ts}</div>
       {if $is_email_receipt}
         <div>

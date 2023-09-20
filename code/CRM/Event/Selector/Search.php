@@ -67,6 +67,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
     'line_total',
     'paid',
     'payLater',
+      // End MissionAssist
   ];
 
   /**
@@ -155,13 +156,14 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
   ) {
     // submitted form values
     $this->_queryParams = &$queryParams;
+    // MissionAssist
     // Issue Event_46
     // Force the context to be participant, as the search contact causes issues
     // with the editing of participants.
     if ($context == 'search') {
       $context = 'participant';
     }
-
+    // End MissionAssist
     $this->_single = $single;
     $this->_limit = $limit;
     $this->_context = $context;
@@ -449,7 +451,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
     return $rows;
   }
   /**
-   *
+   * Start MissionAssist
    * @return array
    * @access public
    *
@@ -525,7 +527,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
      }
         return $row;
   }
-
+  // End MissionAssist
   /**
    * @inheritDoc
    */
@@ -575,6 +577,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
           'direction' => CRM_Utils_Sort::DONTCARE,
         ],
         [
+          // End MissionAssist
           'name' => ts('Registered'),
           'sort' => 'participant_register_date',
           'direction' => CRM_Utils_Sort::DESCENDING,
