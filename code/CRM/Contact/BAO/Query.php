@@ -1579,11 +1579,7 @@ class CRM_Contact_BAO_Query {
    *   4 => null
    *  );
    *
-   * There are some examples of the syntax in
-   * https://github.com/civicrm/civicrm-core/tree/master/api/v3/examples/Relationship
-   *
    * More notes at CRM_Core_DAO::createSQLFilter
-   *
    * and a list of supported operators in CRM_Core_DAO
    *
    * @param array $formValues
@@ -4423,7 +4419,7 @@ civicrm_relationship.start_date > {$today}
     else {
       //End MissiionAssist
       $tableName = $forceTableName ? 'civicrm_relationship.' : '';
-    } //MissionAssist
+    } // End MissionAssist
 
     if (!is_null($from) && !is_null($to)) {
       return '(((' . $tableName . 'start_date >= ' . $from . ' AND ' . $tableName . 'start_date <= ' . $to . ') OR
@@ -5092,9 +5088,11 @@ civicrm_relationship.start_date > {$today}
       if (isset($this->_tables['civicrm_activity'])) {
         $bao = new CRM_Activity_BAO_Activity();
         $clauses = $subclauses = [];
-        foreach ((array) $bao->addSelectWhereClause() as $field => $vals) {
+        foreach ($bao->addSelectWhereClause() as $field => $vals) {
           if ($vals && $field !== 'id') {
-            $clauses[] = $bao->tableName() . ".$field " . $vals;
+            foreach ($vals as $val) {
+              $clauses[] = $bao->tableName() . ".$field " . $val;
+          }
           }
           elseif ($vals) {
             $subclauses[] = "$field " . implode(" AND $field ", (array) $vals);
@@ -6145,7 +6143,6 @@ AND   displayRelType.is_active = 1
       if (!empty($value['table'])) {
         $regex = "/({$value['table']}\.|{$name})/";
         if (preg_match($regex, $sort)) {
-          $this->_elemnt[$value['element']] = 1;
           $this->_select[$value['element']] = $value['select'];
           $this->_pseudoConstantsSelect[$name]['sorting'] = 1;
           $present[$value['table']] = $value['join'];

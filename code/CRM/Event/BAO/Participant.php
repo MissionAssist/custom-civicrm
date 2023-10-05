@@ -269,8 +269,8 @@ class CRM_Event_BAO_Participant extends CRM_Event_DAO_Participant implements \Ci
         );
       }
       if (CRM_Core_Permission::check('delete in CiviEvent')) {
-        $recentOther['deleteUrl'] = CRM_Utils_System::url('civicrm/contact/view/participant',
-          "action=delete&reset=1&id={$participant->id}&cid={$participant->contact_id}&context=home"
+        $recentOther['deleteUrl'] = CRM_Utils_System::url('civicrm/participant/delete',
+          "reset=1&id={$participant->id}"
         );
       }
 
@@ -356,7 +356,7 @@ class CRM_Event_BAO_Participant extends CRM_Event_DAO_Participant implements \Ci
 
     $where = [' event.id = %1 '];
     if (!$considerTestParticipant) {
-      $where[] = ' ( participant.is_test = 0 OR participant.is_test IS NULL ) ';
+      $where[] = ' participant.is_test = 0 ';
     }
 
     // Only count Participant Roles with the "Counted?" flag.
@@ -511,7 +511,7 @@ SELECT  event.event_full_text,
 
     $isTestClause = NULL;
     if (!$considerTestParticipants) {
-      $isTestClause = ' AND ( participant.is_test IS NULL OR participant.is_test = 0 )';
+      $isTestClause = ' AND participant.is_test = 0 ';
     }
 
     $skipParticipantClause = NULL;
@@ -1956,7 +1956,7 @@ WHERE    civicrm_participant.contact_id = {$contactID} AND
       return $details;
     }
     // Verify participant status is one that can be self-cancelled
-    if (!in_array($details['status'], ['Registered', 'Pending from pay later', 'On waitlist'])) {
+      if (!in_array($details['status'], ['Registered', 'Pending from pay later', 'On waitlist', 'Pending from incomplete transaction'])) {
       $details['eligible'] = FALSE;
       $details['ineligible_message'] = ts('You cannot transfer or cancel your registration for %1 as you are not currently registered for this event.', [1 => $eventTitle]);
       return $details;
