@@ -121,7 +121,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     $map = FALSE,
     $editLink = FALSE,
     $linkToUF = FALSE,
-    $thePage = NULL // We get the page object so we can clear the map url if we cannot
+    $thePage = NULL // MissionAssist We get the page object so we can clear the map url if we cannot
               // map any contact. 
   ) {
     $this->_params = $params;
@@ -175,12 +175,12 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     //the below is done for query building for multirecord custom field listing
     //to show all the custom field multi valued records of a particular contact
     $this->setMultiRecordTableName($this->_fields);
-    // If we have passed the page object, then remember it.
+    // MissionAssist adds $thePage and logic. If we have passed the page object, then remember it.
     if (isset($thePage)) {
       $this->_page = $thePage;
     }
   }
-
+  // End MissionAssist
   /**
    * This method returns the links that are given for each search row.
    *
@@ -283,7 +283,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       self::$_columnHeaders = [
         ['name' => ''],
         [
-          'name' => ts('Last and First Name'),
+          'name' => ts('Last and First Name'), //MissionAssist
           'sort' => 'sort_name',
           'direction' => CRM_Utils_Sort::ASCENDING,
           'field_name' => 'sort_name',
@@ -434,7 +434,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         $field = $vars[$key];
         $fieldArray = explode('-', $field['name']);
         $fieldType = $fieldArray['2'] ?? NULL;
-        if (is_numeric(CRM_Utils_Array::value('1', $fieldArray))) {
+        if (is_numeric($fieldArray['1'] ?? '')) {
           if (!in_array($fieldType, $multipleFields)) {
             $locationType = new CRM_Core_DAO_LocationType();
             $locationType->id = $fieldArray[1];
@@ -492,6 +492,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         $this->_editLink = TRUE;
       }
     }
+    // MissionAssist checks for $viewContacts
     $viewContacts = CRM_Core_Permission::check('view all contacts');
     $links = self::links($this->_map, $this->_editLink, $this->_linkToUF, $this->_profileIds);
 
@@ -567,7 +568,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
 
     // we need to determine of overlay profile should be shown
     $showProfileOverlay = CRM_Core_BAO_UFGroup::showOverlayProfile();
-    $canMap = false; // We can't display maps by default
+    $canMap = false; // MissionAssist. We can't display maps by default
     while ($result->fetch()) {
       $this->_query->convertToPseudoNames($result);
 
@@ -578,21 +579,24 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       }
       $row = [];
       $empty = TRUE;
-      // Find out if we can the details of the contact.
+      // MissionAssist adds $cacnView. Find out if we can view the details of the contact.
       $contactIds = array();
       $contactIds[] = $result->contact_id;
       $newIds = CRM_Contact_BAO_Contact_Permission::allowList($contactIds);
       $canView = (count($newIds) > 0);
       if ($canView) {
+        // End MissionAssist
         $row[] = CRM_Contact_BAO_Contact_Utils::getImage($result->contact_sub_type ? $result->contact_sub_type : $result->contact_type,
           FALSE,
           $result->contact_id,
           $showProfileOverlay
         );
+        // MissionAssist
         $canMap = true;
       } else {
         $row[] = "";
       }
+      // End MissionAssist
       if ($result->sort_name) {
         $row[] = $result->sort_name;
         $empty = FALSE;
@@ -677,6 +681,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
           $empty = FALSE;
         }
       }
+      // MissionAssist
       // If we have passed the page object and can't view the contact then
       // clear the Map URL.
       $thePage = $this->_page;
@@ -703,6 +708,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
           
         }
       }
+      // End MissionAssist
       $params = [
         'id' => $result->contact_id,
         'gid' => implode(',', $this->_profileIds),
@@ -737,7 +743,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         'Contact',
         $result->contact_id
       );
-      // If we can't view all contacts, then we don't want the link to the
+      // MissionAssist. If we can't view all contacts, then we don't want the link to the
       // contact information to appear.
       if (!$viewContacts) {
         $row[0] = '';
@@ -747,7 +753,6 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
         $rows[] = $row;
       }
     }
-    
     return $rows;
   }
 

@@ -137,13 +137,16 @@ class CRM_Contact_Form_Task_Map extends CRM_Contact_Form_Task {
         CRM_Core_Error::statusBounce(ts('You do not have the rights to map any contact'));
         return;
       }
+      //End MissionAssist
       // google needs image url, CRM-6564
       if ($config->mapProvider == 'Google' || $config->mapProvider == 'OpenStreetMaps') {
         $imageUrlOnly = TRUE;
       }
+      // MissioinAssistuses $newIds
       $locations = CRM_Contact_BAO_Contact_Location::getMapInfo($newIds, $locationId, $imageUrlOnly);
     }
     else {
+      // MissioinAssistuses $newIds
       $locations = CRM_Event_BAO_Event::getMapInfo($newIds);
     }
 

@@ -9,10 +9,10 @@
 *}
 
 <div class="crm-profile-name-{$ufGroupName}">
-{crmRegion name=profile-search-`$ufGroupName`}
+{crmRegion name="profile-search-`$ufGroupName`"}
 
 {* make sure there are some fields in the selector *}
-{if ! empty( $columnHeaders ) || $isReset }
+{if ! empty($columnHeaders) || $isReset}
 
 {if $search}
 <div class="crm-block crm-form-block">
@@ -43,7 +43,7 @@
     <table>
       <tr class="columnheader">
       {foreach from=$columnHeaders item=header}
-        {if $header.field_name != 'sort_name' || $canMap}
+        {if $header.field_name != 'sort_name' || $canMap} {*MissionAssist*}
             <th scope="col">
             {if $header.sort}
               {assign var='key' value=$header.sort}
@@ -52,7 +52,7 @@
               {$header.name}
             {/if}
          </th>
-       {/if}
+       {/if}  {*MissionAssist*}
       {/foreach}
       </tr>
 
@@ -60,13 +60,13 @@
       {foreach from=$rows item=row name=listings}
       <tr id="row-{$smarty.foreach.listings.iteration}" class="{cycle values="odd-row,even-row"}">
       {foreach from=$row key=index item=value}
-        {if $columnHeaders.$index.field_name != 'sort_name' || $canMap}
+        {if $columnHeaders.$index.field_name != 'sort_name' || $canMap}  {*MissionAssist*}
             {if $columnHeaders.$index.field_name}
                   <td class="crm-{$columnHeaders.$index.field_name}">{$value}</td>
             {else}
               <td>{$value}</td>
             {/if}
-        {/if}
+        {/if}  {*MissionAssist*}
       {/foreach}
       </tr>
       {/foreach}

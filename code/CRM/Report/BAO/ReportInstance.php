@@ -77,7 +77,8 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
     }
 
     if (!$instanceID) {
-      if ($reportID = CRM_Utils_Array::value('report_id', $params)) {
+      $reportID = $params['report_id'] ?? NULL;
+      if ($reportID) {
         $instance->report_id = $reportID;
       }
       elseif ($instanceID) {
@@ -135,7 +136,8 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
       $navigationParams['parent_id'] = $params['parent_id'] ?? NULL;
       $navigationParams['is_active'] = 1;
 
-      if ($permission = CRM_Utils_Array::value('permission', $params)) {
+      $permission = $params['permission'] ?? NULL;
+      if ($permission) {
         $navigationParams['permission'][] = $permission;
       }
 
@@ -157,7 +159,8 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
         'label' => $params['title'],
         'is_active' => 1,
       ];
-      if ($permission = CRM_Utils_Array::value('permission', $params)) {
+      $permission = $params['permission'] ?? NULL;
+      if ($permission) {
         $dashletParams['permission'][] = $permission;
       }
     }
@@ -381,6 +384,7 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
         ],
       ];
     }
+    // MissionAssist
     else {
       // CRM-19330 Remove the options to save or save a copy.
       // remove the remaining actions if an non-privileged user
@@ -389,6 +393,7 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
           unset($actions[$key]);
         }
     }
+    // End MissionAssist
     return $actions;
   }
 

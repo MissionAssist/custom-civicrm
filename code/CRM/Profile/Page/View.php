@@ -98,7 +98,7 @@ class CRM_Profile_Page_View extends CRM_Core_Page {
       if (!empty($profileIds)) {
         $gidString = implode(',', $profileIds);
       }
-      // check that we can view the contact details.
+      // MissionAssist Check that we can view the contact details.
       $ids[] = $this->_id;
       $ids = CRM_Contact_BAO_Contact_Permission::allowList($ids);
       if(count($ids) == 0) {
@@ -106,6 +106,7 @@ class CRM_Profile_Page_View extends CRM_Core_Page {
       } else {
         $map = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $this->_gid, 'is_map');
       }
+      // End MissioAssist
       if ($map) {
         $this->assign('mapURL',
           CRM_Utils_System::url("civicrm/profile/map",
@@ -201,7 +202,7 @@ class CRM_Profile_Page_View extends CRM_Core_Page {
    */
   public function getTemplateFileName() {
     $fileName = $this->checkTemplateFileExists();
-    return $fileName ? $fileName : parent::getTemplateFileName();
+    return $fileName ?: parent::getTemplateFileName();
   }
 
   /**
@@ -212,7 +213,7 @@ class CRM_Profile_Page_View extends CRM_Core_Page {
    */
   public function overrideExtraTemplateFileName() {
     $fileName = $this->checkTemplateFileExists('extra.');
-    return $fileName ? $fileName : parent::overrideExtraTemplateFileName();
+    return $fileName ?: parent::overrideExtraTemplateFileName();
   }
 
 }
