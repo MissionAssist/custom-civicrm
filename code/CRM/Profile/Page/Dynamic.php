@@ -367,7 +367,7 @@ class CRM_Profile_Page_Dynamic extends CRM_Core_Page {
     } else {
          $displayName = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $this->_id, 'display_name');
     }
-    // MissionAssist
+    // End MissionAssist
     if ($displayName) {
       $session = CRM_Core_Session::singleton();
       $config = CRM_Core_Config::singleton();
@@ -427,7 +427,7 @@ class CRM_Profile_Page_Dynamic extends CRM_Core_Page {
    */
   public function getTemplateFileName() {
     $fileName = $this->checkTemplateFileExists();
-    return $fileName ? $fileName : parent::getTemplateFileName();
+    return $fileName ?: parent::getTemplateFileName();
   }
 
   /**
@@ -438,7 +438,7 @@ class CRM_Profile_Page_Dynamic extends CRM_Core_Page {
    */
   public function overrideExtraTemplateFileName() {
     $fileName = $this->checkTemplateFileExists('extra.');
-    return $fileName ? $fileName : parent::overrideExtraTemplateFileName();
+    return $fileName ?: parent::overrideExtraTemplateFileName();
   }
 
   /**

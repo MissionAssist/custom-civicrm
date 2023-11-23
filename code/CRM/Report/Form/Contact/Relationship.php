@@ -687,6 +687,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
   public function alterDisplay(&$rows) {
     // Custom code to alter rows.
     $entryFound = FALSE;
+    // MissionAssist
     // Find the individual profile by looking it up by name. This ensures portability
     // beween systems.
     $uFGroups = \Civi\Api4\UFGroup::get(FALSE)
@@ -704,7 +705,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       $organisationID = $uFGroups[0]['id'];
 
     
-
+    //End MissionAssist
     foreach ($rows as $rowNum => $row) {
 
       // Handle ID to label conversion for contact fields
