@@ -43,11 +43,7 @@
             <tr class="crm-search-results-{$element}">
               <td class="label">{$form.$element.label}</td>
               <td width="400">
-                {if $element eq 'start_date' OR $element eq 'end_date'}
-                 {include file="CRM/Core/DatePickerRangeWrapper.tpl" fieldName=$element to='' from='' colspan="2" class='' hideRelativeLabel=0}                 <input crm-ui-datepicker={"time: false, date: 'dd-mm-yyyy'"} type="text" name="{$element}" />
-                {else}
-                  {$form.$element.html}
-                {/if}
+                {$form.$element.html}
               </td>
             </tr>
           {/foreach}
