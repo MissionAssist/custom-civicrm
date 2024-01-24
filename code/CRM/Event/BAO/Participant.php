@@ -449,14 +449,15 @@ SELECT  event.event_full_text,
  WHERE  event.id = %1';
       $event = CRM_Core_DAO::executeQuery($query, $eventParams);
       while ($event->fetch()) {
-        $eventFullText = $event->event_full_text;
+        $eventFullText = $event->event_full_text               . " with maximum participants $event->max_participants";
         $eventMaxSeats = $event->max_participants;
+        Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Event Full text $eventFullText, Max participants [$eventMaxSeats]"); 
       }
     }
 
     // no limit for registration.
     if ($eventMaxSeats == NULL) {
-      return $result;
+      return $eventFullText;
     }
     if ($eventMaxSeats) {
       return ($returnEmptySeats) ? (int) $eventMaxSeats : FALSE;
