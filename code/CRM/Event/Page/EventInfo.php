@@ -240,9 +240,9 @@ class CRM_Event_Page_EventInfo extends CRM_Core_Page {
     }
 
     $hasWaitingList = $values['event']['has_waitlist'] ?? NULL;
-    Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Getting available spaces"); 
+    //Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Getting available spaces"); 
     $availableSpaces = $this->getEventValue('available_spaces');
-    Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Available spaces [$availableSpaces]"); 
+    //Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Available spaces [$availableSpaces]"); 
     $allowRegistration = FALSE;
     $isEventOpenForRegistration = CRM_Event_BAO_Event::validRegistrationRequest($values['event'], $this->_id);
     if (!empty($values['event']['is_online_registration'])) {

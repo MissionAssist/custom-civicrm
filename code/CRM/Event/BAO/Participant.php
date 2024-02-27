@@ -451,7 +451,7 @@ SELECT  event.event_full_text,
       while ($event->fetch()) {
         $eventFullText = $event->event_full_text               . " with maximum participants $event->max_participants";
         $eventMaxSeats = $event->max_participants;
-        Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Event Full text $eventFullText, Max participants [$eventMaxSeats]"); 
+        //Civi::log()->debug(__FILE__ . " line " . __LINE__ ." Event Full text $eventFullText, Max participants [$eventMaxSeats]"); 
       }
     }
 
