@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 8 August 2023
+ *  Last modified by Stephen Palmstrom 27 February 2024
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -283,7 +283,6 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
               1 => ts('Active'),
               0 => ts('Inactive'),
             ],
-            'default' => ts('Active'),
             'type' => CRM_Utils_Type::T_INT,
           ],
           'is_valid' => [
@@ -294,7 +293,6 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
               1 => ts('Not expired'),
               0 => ts('Expired'),
             ],
-            'default' => ts('Not expired'),
             'type' => CRM_Utils_Type::T_INT,
           ],
           'relationship_type_id' => [
@@ -465,7 +463,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         foreach ($table['filters'] as $fieldName => $field) {
 
           $clause = NULL;
-          if (CRM_Utils_Array::value('type', $field) & CRM_Utils_Type::T_DATE) {
+          if (($field['type'] ?? 0) & CRM_Utils_Type::T_DATE) {
             $relative = $this->_params["{$fieldName}_relative"] ?? NULL;
             $from = $this->_params["{$fieldName}_from"] ?? NULL;
             $to = $this->_params["{$fieldName}_to"] ?? NULL;
@@ -507,8 +505,8 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
                   $clause = $this->whereClause($field,
                     $op,
                     $contactTypes,
-                    CRM_Utils_Array::value("{$fieldName}_min", $this->_params),
-                    CRM_Utils_Array::value("{$fieldName}_max", $this->_params)
+                    $this->_params["{$fieldName}_min"] ?? NULL,
+                    $this->_params["{$fieldName}_max"] ?? NULL
                   );
                 }
 
@@ -518,8 +516,8 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
                   $subTypeClause = $this->whereClause($field,
                     $op,
                     $contactSubTypes,
-                    CRM_Utils_Array::value("{$fieldName}_min", $this->_params),
-                    CRM_Utils_Array::value("{$fieldName}_max", $this->_params)
+                    $this->_params["{$fieldName}_min"] ?? NULL,
+                    $this->_params["{$fieldName}_max"] ?? NULL
                   );
                   if ($clause) {
                     $clause = '(' . $clause . ' OR ' . $subTypeClause . ')';
@@ -536,9 +534,9 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
                 else {
                   $clause = $this->whereClause($field,
                     $op,
-                    CRM_Utils_Array::value("{$fieldName}_value", $this->_params),
-                    CRM_Utils_Array::value("{$fieldName}_min", $this->_params),
-                    CRM_Utils_Array::value("{$fieldName}_max", $this->_params)
+                    $this->_params["{$fieldName}_value"] ?? NULL,
+                    $this->_params["{$fieldName}_min"] ?? NULL,
+                    $this->_params["{$fieldName}_max"] ?? NULL
                   );
                 }
               }
