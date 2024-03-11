@@ -1084,7 +1084,7 @@ class CRM_Report_Form extends CRM_Core_Form {
             $order_by = [
               'column' => $fieldName,
               'order' => CRM_Utils_Array::value('default_order', $field, 'ASC'),
-              'section' => CRM_Utils_Array::value('default_is_section', $field, 0),
+              'section' => $field['default_is_section'] ?? 0,
             ];
 
             if (!empty($field['default_weight'])) {
@@ -1396,7 +1396,7 @@ class CRM_Report_Form extends CRM_Core_Form {
         if (empty($field['operatorType'])) {
           $field['operatorType'] = '';
         }
-        $field['no_display'] = $field['no_display'] ?? FALSE;
+        $field['no_display'] ??= FALSE;
         $filterGroups[$groupingKey]['tables'][$table][$fieldName] = $field;
         // Filters is deprecated in favour of filterGroups.
         $filters[$table][$fieldName] = $field;
@@ -3078,13 +3078,12 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
    *
    * @return string
    */
-  public function buildQuery($applyLimit = TRUE,
-          $checkPermssions = TRUE) {
+  public function buildQuery($applyLimit = TRUE) {
     $this->buildGroupTempTable();
     $this->select();
     $this->from();
     $this->customDataFrom();
-    $this->buildPermissionClause($checkPermssions);
+    $this->buildPermissionClause($checkPermssions); //MissionAssist
     $this->where();
     $this->groupBy();
     $this->orderBy();
@@ -3533,8 +3532,9 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
                     $val[$key] = $options[$valIds];
                   }
                 }
-                $pair[$op] = (count($val) == 1) ? (($op == 'notin' || $op ==
-                  'mnot') ? ts('Is Not') : ts('Is')) : CRM_Utils_Array::value($op, $pair);
+                $pair[$op] = (count($val) == 1) ?
+                  (($op == 'notin' || $op == 'mnot') ? ts('Is Not') : ts('Is')) :
+                  ($pair[$op] ?? '');
                 $val = implode(', ', $val);
                 $value = "{$pair[$op]} " . $val;
               }
@@ -3542,8 +3542,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
                 isset($field['options']) &&
                 is_array($field['options']) && !empty($field['options'])
               ) {
-                $value = ($pair[$op] ?? '') . " " .
-                  CRM_Utils_Array::value($val, $field['options'], $val);
+                $value = ($pair[$op] ?? '') . ' ' . ($field['options'][$val] ?? $val);
               }
               elseif ($val || $val == '0') {
                 $value = ($pair[$op] ?? '') . " " . $val;
@@ -3652,7 +3651,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
     $templateFile = $this->getHookedTemplateFileName();
     return ($this->_formValues['report_header'] ?? '') .
     CRM_Core_Form::$_template->fetch($templateFile) .
-    CRM_Utils_Array::value('report_footer', $this->_formValues);
+      ($this->_formValues['report_footer'] ?? '');
   }
 
   /**
@@ -3688,7 +3687,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
    * @return array
    */
   public function limit($rowCount = NULL) {
-    $rowCount = $rowCount ?? $this->getRowCount();
+    $rowCount ??= $this->getRowCount();
     // lets do the pager if in html mode
     $this->_limit = NULL;
 
@@ -3739,7 +3738,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
    * @param int|null $rowCount
    */
   public function setPager($rowCount = NULL) {
-    $rowCount = $rowCount ?? $this->getRowCount();
+    $rowCount ??= $this->getRowCount();
     // CRM-14115, over-ride row count if rowCount is specified in URL
     if ($this->_dashBoardRowCount) {
       $rowCount = $this->_dashBoardRowCount;
@@ -3981,11 +3980,13 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
    * Build the permission clause for all entities in this report
    * @param $checkPermission allows us to fine tune permission.
    */
+  // MissionAssist
   public function buildPermissionClause($checkPermissions = TRUE) {
     if (!$checkPermissions) {
         // If we aren't checking permissions, teen return.
         return;
     }
+    // End MissionAssist
     $ret = [];
     foreach ($this->selectedTables() as $tableName) {
       $baoName = str_replace('_DAO_', '_BAO_', (CRM_Core_DAO_AllCoreTables::getClassForTable($tableName) ?? ''));
@@ -4279,14 +4280,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
   protected function isFieldFiltered($prop) {
     if (!empty($prop['filters']) && $this->_customGroupFilters) {
       foreach ($prop['filters'] as $fieldAlias => $val) {
-        foreach ([
-          'value',
-          'min',
-          'max',
-          'relative',
-          'from',
-          'to',
-        ] as $attach) {
+        foreach (['value', 'min', 'max', 'relative', 'from', 'to'] as $attach) {
           if (isset($this->_params[$fieldAlias . '_' . $attach]) &&
             (!empty($this->_params[$fieldAlias . '_' . $attach])
               || ($attach != 'relative' &&
@@ -5045,7 +5039,7 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
       'is_deceased' => [
         'title' => ts('Deceased'),
         'type' => CRM_Utils_Type::T_BOOLEAN,
-        'default' => CRM_Utils_Array::value('deceased', $defaults, 0),
+        'default' => $defaults['deceased'] ?? 0,
       ],
       'do_not_email' => [
         'title' => ts('Do not email'),

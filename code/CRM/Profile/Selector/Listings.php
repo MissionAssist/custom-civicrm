@@ -316,11 +316,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
                 $locationTypeName = $locationTypes[$lType];
               }
 
-              if (in_array($fieldName, [
-                'phone',
-                'im',
-                'email',
-              ])) {
+              if (in_array($fieldName, ['phone', 'im', 'email'])) {
                 if ($type) {
                   $name = "`$locationTypeName-$fieldName-$type`";
                 }
@@ -531,11 +527,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
               continue;
             }
             $locationTypeName = str_replace(' ', '_', $locationTypeName);
-            if (in_array($fieldName, [
-              'phone',
-              'im',
-              'email',
-            ])) {
+            if (in_array($fieldName, ['phone', 'im', 'email'])) {
               if ($type) {
                 $names[] = "{$locationTypeName}-{$fieldName}-{$type}";
               }
@@ -619,7 +611,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
           $typeId = substr($name, 0, -4) . "-website_type_id";
           $typeName = CRM_Core_PseudoConstant::getLabel('CRM_Core_DAO_Website', 'website_type_id', $result->$typeId);
           if ($typeName) {
-            $row[] = "<a href=\"$url\">{$result->$name} (${typeName})</a>";
+            $row[] = "<a href=\"$url\">{$result->$name} ($typeName)</a>";
           }
           else {
             $row[] = "<a href=\"$url\">{$result->$name}</a>";
@@ -664,10 +656,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
           $dname = $name . '_display';
           $row[] = $result->$dname;
         }
-        elseif (in_array($name, [
-          'birth_date',
-          'deceased_date',
-        ])) {
+        elseif (in_array($name, ['birth_date', 'deceased_date'])) {
           $row[] = CRM_Utils_Date::customFormat($result->$name);
         }
         elseif (isset($result->$name)) {

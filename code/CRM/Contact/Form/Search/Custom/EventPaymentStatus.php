@@ -105,8 +105,8 @@ implements CRM_Contact_Form_Search_Interface {
         $events = CRM_Event_BAO_Event::getEvents( 1, NULL, TRUE, TRUE);
         $form->add('select', 'event_id',  ts( 'Event Name' ), array( '' => ts( '- select -' ) ) + $events ) ;
         
-        $form->addDate('start_date', ts('Payments Date From'), false, array( 'formatType' => 'custom' ) );
-        $form->addDate('end_date', ts('...through'), false, array( 'formatType' => 'custom' ) );
+        $form->add('datepicker', 'start_date', ts('Payments Date From'), false, array( 'formatType' => 'custom' ) );
+        $form->add('datepicker', 'end_date', ts('...through'), false, array( 'formatType' => 'custom' ) );
 
         $event_type = CRM_Core_OptionGroup::values('event_type', FALSE);
 
@@ -199,8 +199,9 @@ implements CRM_Contact_Form_Search_Interface {
 
  
         $where = $this->where();
-        if ( $where == "") (
-        $where = "true = true");  // put something in the WHERE clause
+        if ( $where == "") {
+          $where = "true = true";      
+        }  // put something in the WHERE clause
         $groupBy = "e.id, p.contact_id";
         if ( ! empty($this->_formValues['event_type_id'] ) ) {
             $groupBy = "e.id, p.id";

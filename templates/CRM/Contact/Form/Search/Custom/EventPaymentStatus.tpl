@@ -26,7 +26,7 @@
  Modify for CiviCRM 4.5
 *}
 {* Template for "EventPaymentStatus" custom search component. *}
-{*debug*}
+{debug}
 <div class="crm-form-block crm-search-form-block">
   <div class="crm-accordion-wrapper crm-activity_search-accordion {if $rows}crm-accordion-closed{else}crm-accordion-open{/if}">
     <div class="crm-accordion-header crm-master-accordion-header">
@@ -43,11 +43,7 @@
             <tr class="crm-search-results-{$element}">
               <td class="label">{$form.$element.label}</td>
               <td width="400">
-                {if $element eq 'start_date' OR $element eq 'end_date'}
-                  {include file="CRM/common/jcalendar.tpl" elementName=$element}
-                {else}
-                  {$form.$element.html}
-                {/if}
+                {$form.$element.html}
               </td>
             </tr>
           {/foreach}
