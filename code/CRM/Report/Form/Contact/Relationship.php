@@ -67,7 +67,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' => [
           'sort_name_a' => [
-            'title' => ts('Organisation'),
+            'title' => ts('Contact A'),
             'name' => 'sort_name',
             'required' => TRUE,
           ],
@@ -117,12 +117,12 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         'alias' => 'contact_b',          
         'fields' => [
           'sort_name_b' => [
-            'title' => ts('Name'),
+            'title' => ts('Contact B'),
             'name' => 'sort_name',
             'required' => TRUE,
           ],
           'display_name_b' => [
-            'title' => ts('Full Name'),
+            'title' => ts('Full Name'), //MissionAssist
             'name' => 'display_name',
           ],
           'id' => [
@@ -662,11 +662,9 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
     $this->buildACLClause([
       $this->_aliases['civicrm_contact'],
       $this->_aliases['civicrm_contact_b'],
-    ], FALSE); // We won't check view all contacts permission
-     * 
-     */
-    // Don't check permissions - the report fine-tunes this.
-    $sql = $this->buildQuery(TRUE,FALSE);
+    ]);
+
+    $sql = $this->buildQuery();
     $this->buildRows($sql, $rows);
 
     $this->formatDisplay($rows);
@@ -757,15 +755,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           = $rows[$rowNum]['civicrm_contact_sort_name_a'] . ' (' .
           $rows[$rowNum]['civicrm_contact_id'] . ')';
         $rows[$rowNum]['civicrm_contact_sort_name_a_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Organisation');    
-        } else {
-        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_id'] . "&gid=" . $organisationID;
-        $rows[$rowNum]['civicrm_contact_sort_name_a']
-          = $rows[$rowNum]['civicrm_contact_sort_name_a'] . ' (' .
-          $rows[$rowNum]['civicrm_contact_id'] . ')';
-        $rows[$rowNum]['civicrm_contact_sort_name_a_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Profile for this organisation');
-        }
+        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Contact Detail Report for this contact');
         $entryFound = TRUE;
       }
 
@@ -774,26 +764,15 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       if (array_key_exists('civicrm_contact_b_sort_name_b', $row) &&
         array_key_exists('civicrm_contact_b_id', $row)
       ) {
-        if (CRM_Core_Permission::check('administer users') ||
-         CRM_Core_Permission::check('view all contacts')
-        // || CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_id'])
-          ) {
-
-        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_b_id'];
+        $url = CRM_Report_Utils_Report::getNextUrl('contact/detail',
+          'reset=1&force=1&id_op=eq&id_value=' . $row['civicrm_contact_b_id'],
+          $this->_absoluteUrl, $this->_id, $this->_drilldownReport
+        );
         $rows[$rowNum]['civicrm_contact_b_sort_name_b']
           = $rows[$rowNum]['civicrm_contact_b_sort_name_b'] . ' (' .
           $rows[$rowNum]['civicrm_contact_b_id'] . ')';
         $rows[$rowNum]['civicrm_contact_b_sort_name_b_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Individual');
-   
-      } else {
-        $url = '/civicrm/profile/view?reset=1&id=' . $row['civicrm_contact_b_id'] ."&gid=" . $individualID;
-        $rows[$rowNum]['civicrm_contact_b_sort_name_b']
-          = $rows[$rowNum]['civicrm_contact_b_sort_name_b'] . ' (' .
-          $rows[$rowNum]['civicrm_contact_id'] . ')';
-        $rows[$rowNum]['civicrm_contact_b_sort_name_b_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Contact Profile');
-      }
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Contact Detail Report for this contact');
         $entryFound = TRUE;
       }
 
