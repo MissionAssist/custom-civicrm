@@ -757,9 +757,8 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         $rows[$rowNum]['civicrm_contact_sort_name_a_link'] = $url;
         $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Contact Detail Report for this contact');
         $entryFound = TRUE;
-      }
-
-      // Handle contact name B
+        }
+      }      // Handle contact name B
       // @todo refactor into separate function
       if (array_key_exists('civicrm_contact_b_sort_name_b', $row) &&
         array_key_exists('civicrm_contact_b_id', $row)
