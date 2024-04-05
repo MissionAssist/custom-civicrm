@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 27 February 2024
+ *  Last modified by Stephen Palmstrom 5 April 2024
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -658,7 +658,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
   public function postProcess() {
     $this->beginPostProcess();
-    /*
+
     $this->buildACLClause([
       $this->_aliases['civicrm_contact'],
       $this->_aliases['civicrm_contact_b'],
