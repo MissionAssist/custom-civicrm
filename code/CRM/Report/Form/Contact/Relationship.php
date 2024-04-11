@@ -15,7 +15,7 @@
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
 /*
- *  Last modified by Stephen Palmstrom 5 April 2024
+ *  Last modified by Stephen Palmstrom 9 April 2024
  * 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
@@ -746,32 +746,45 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       if (array_key_exists('civicrm_contact_sort_name_a', $row) &&
         array_key_exists('civicrm_contact_id', $row)
       ) {
+        // Start MissionAssist
         if (CRM_Core_Permission::check('administer users') ||
                 CRM_Core_Permission::check('view all contacts')
                 //|| CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_id'])
-                ) {
+        ) {
+        // View contact details not the Constituent Details
         $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_id'];
+        }
+        // End MissionAssist
         $rows[$rowNum]['civicrm_contact_sort_name_a']
           = $rows[$rowNum]['civicrm_contact_sort_name_a'] . ' (' .
           $rows[$rowNum]['civicrm_contact_id'] . ')';
         $rows[$rowNum]['civicrm_contact_sort_name_a_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Contact Detail Report for this contact');
+        // Start MissionAssist
+        $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Contact Details for this contact');
+        //End MissionAssist
         $entryFound = TRUE;
         }
-      }      // Handle contact name B
+
+      // Handle contact name B
       // @todo refactor into separate function
       if (array_key_exists('civicrm_contact_b_sort_name_b', $row) &&
         array_key_exists('civicrm_contact_b_id', $row)
       ) {
-        $url = CRM_Report_Utils_Report::getNextUrl('contact/detail',
-          'reset=1&force=1&id_op=eq&id_value=' . $row['civicrm_contact_b_id'],
-          $this->_absoluteUrl, $this->_id, $this->_drilldownReport
-        );
+        // Start MissionAssist
+        if (CRM_Core_Permission::check('administer users') ||
+                CRM_Core_Permission::check('view all contacts')
+                //|| CRM_Contact_BAO_Contact_Permission::allow($row['civicrm_contact_id'])
+        ) {
+        $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_b_id'];
+        }
+        // End MissionAssist
         $rows[$rowNum]['civicrm_contact_b_sort_name_b']
           = $rows[$rowNum]['civicrm_contact_b_sort_name_b'] . ' (' .
           $rows[$rowNum]['civicrm_contact_b_id'] . ')';
         $rows[$rowNum]['civicrm_contact_b_sort_name_b_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Contact Detail Report for this contact');
+        // Start MissionAssist
+        $rows[$rowNum]['civicrm_contact_b_sort_name_b_hover'] = ts('View Contact Details for this contact');
+        // End MissionAssist
         $entryFound = TRUE;
       }
 
