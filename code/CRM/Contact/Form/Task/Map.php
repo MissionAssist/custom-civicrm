@@ -146,8 +146,7 @@ class CRM_Contact_Form_Task_Map extends CRM_Contact_Form_Task {
       $locations = CRM_Contact_BAO_Contact_Location::getMapInfo($newIds, $locationId, $imageUrlOnly);
     }
     else {
-      // MissioinAssistuses $newIds
-      $locations = CRM_Event_BAO_Event::getMapInfo($newIds);
+      $locations = CRM_Event_BAO_Event::getMapInfo($ids);
     }
 
     if (empty($locations)) {
