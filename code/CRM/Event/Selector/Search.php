@@ -504,8 +504,8 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
             $ids[] = $registered_by_id;
             $primaryContact_id = CRM_Event_DAO_Participant::getContactIDsFromComponent($ids, 'civicrm_participant');
             $primaryContact = CRM_Contact_BAO_Contact::getContactDetails($primaryContact_id[0]);
-            $paymentInfo['participant_fee_amount'] = 'Registered by';
-            $paymentInfo['paid'] = $primaryContact[0];
+            $paymentInfo['participant_fee_amount'] = 'Registered by </br>' . $primaryContact[0];
+            $paymentInfo['paid'] = 'N/A';
             $paymentInfo['balance'] = 'N/A';
             $row = array_merge($row, $paymentInfo);
         }
