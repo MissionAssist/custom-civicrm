@@ -679,6 +679,28 @@ ORDER BY  cv.label
         */
         //Start MissionAssist
         $url = '/civicrm/contact/view?reset=1&cid=' . $row['civicrm_contact_id'];
+        // Check if the participant was registered by somebody else
+        $registeredById = CRM_Event_BAO_Participant::getRegisteredByID($id);
+        if ($registeredById) {
+          $ids[] = $registeredById;
+          $primaryContact_id = CRM_Event_DAO_Participant::getContactIDsFromComponent($ids, 'civicrm_participant');
+          $primaryContact = CRM_Contact_BAO_Contact::getContactDetails($primaryContact_id[0]);
+          $rows[$rowNum]['civicrm_participant_participant_fee_amount'] = 'Registered by </br>' . $primaryContact[0];
+          $rows[$rowNum]['civicrm_participant_total_paid'] = 'N/A';
+          $rows[$rowNum]['civicrm_participant_balance'] = 'N/A';
+        } else {
+        // Handle registered by and registering by regardless of column selection
+          $additionalparticipants = CRM_Event_BAO_Participant::getAdditionalParticipantIds($id);
+          $fee_details = CRM_Event_BAO_Participant::getFeeDetails($additionalparticipants);
+          // Get the fee data for any additional participants, so we add them to the primary particpipant.
+          foreach ($fee_details as $fee)
+          {
+              $rows[$rowNum]['civicrm_participant_participant_fee_amount'] += floatval($fee['fee_amount']);
+          }
+          // calculate the correct balance baed on the recalculated figures
+          $rows[$rowNum]['civicrm_participant_balance'] = $rows[$rowNum]['civicrm_participant_participant_fee_amount'] - 
+                  $rows[$rowNum]['civicrm_participant_total_paid'];
+        }
         //End MissionAssist
         $viewUrl = CRM_Utils_System::url("civicrm/contact/view/participant",
           "reset=1&id=$id&cid=$cid&action=view&context=participant"
