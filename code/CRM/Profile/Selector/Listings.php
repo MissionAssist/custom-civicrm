@@ -477,6 +477,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     // check if edit is configured in profile settings
     if ($this->_gid) {
       $editLink = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $this->_gid, 'is_edit_link');
+      Civi::log()->debug('$editLink = ' . $editLink);
     }
 
     //FIXME : make sure to handle delete separately. CRM-4418
