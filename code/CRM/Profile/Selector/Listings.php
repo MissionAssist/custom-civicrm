@@ -477,7 +477,6 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
     // check if edit is configured in profile settings
     if ($this->_gid) {
       $editLink = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $this->_gid, 'is_edit_link');
-      Civi::log()->debug('$editLink = ' . $editLink);
     }
 
     //FIXME : make sure to handle delete separately. CRM-4418
@@ -577,6 +576,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       $contactIds[] = $result->contact_id;
       $newIds = CRM_Contact_BAO_Contact_Permission::allowList($contactIds);
       $canView = (count($newIds) > 0);
+      Civi::log()->debug('$canView = ' . $canView);
       if ($canView) {
         // End MissionAssist
         $row[] = CRM_Contact_BAO_Contact_Utils::getImage($result->contact_sub_type ? $result->contact_sub_type : $result->contact_type,
@@ -735,6 +735,7 @@ class CRM_Profile_Selector_Listings extends CRM_Core_Selector_Base implements CR
       );
       // MissionAssist. If we can't view all contacts, then we don't want the link to the
       // contact information to appear.
+      Civi::log()->debug('$viewContacts = ' . $viewContacts);
       if (!$viewContacts) {
         $row[0] = '';
       }
