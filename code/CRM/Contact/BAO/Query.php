@@ -1276,10 +1276,6 @@ class CRM_Contact_BAO_Query {
 
                   //build locationType join
                   $locationTypeJoin[$tName] = " ( `$tName`.location_type_id = $ltName.id )";
-
-                  if ($addWhere) {
-                    $this->_whereTables[$tName] = $this->_tables[$tName];
-                  }
                   break;
 
                 case 'civicrm_state_province':
@@ -4776,9 +4772,8 @@ civicrm_relationship.start_date > {$today}
       return FALSE;
     }
     try {
-      $customFieldData = CRM_Core_BAO_CustomField::getFieldObject($customFieldID);
-      $customFieldDataType = $customFieldData->data_type;
-      if ('Date' == $customFieldDataType) {
+      $customFieldData = CRM_Core_BAO_CustomField::getField($customFieldID);
+      if ($customFieldData && 'Date' == $customFieldData['data_type']) {
         return TRUE;
       }
     }
@@ -5512,7 +5507,7 @@ civicrm_relationship.start_date > {$today}
 
     $asofDateValues = $this->getWhereValues("{$fieldName}_asof_date", $grouping);
     // will be treated as current day
-    $asofDate = NULL;
+    $asofDate = '';
     if ($asofDateValues) {
       $asofDate = CRM_Utils_Date::processDate($asofDateValues[2]);
       $asofDateFormat = CRM_Utils_Date::customFormat(substr($asofDate, 0, 8));
