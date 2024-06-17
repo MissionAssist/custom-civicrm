@@ -211,6 +211,10 @@ class CRM_Member_BAO_Query extends CRM_Core_BAO_Query {
         return;
 
       case 'member_join_date':
+        // This seeks to correct issue 5294. 'Old' smart groups will need
+        // updating in due course as the selection criteion here doesn't show
+        // any more. Without this patch, the smart group crashes.
+        // It will enable one update 'offending' smart groups.
         CRM_Core_Error::deprecatedWarning('member_join_date field is deprecated please use membership_join_date field instead');
         $op = '>=';
         $date = CRM_Utils_Date::format($value);
