@@ -196,13 +196,6 @@ class CRM_Event_BAO_Participant extends CRM_Event_DAO_Participant implements \Ci
       $id = $params['contact_id'] ?? NULL;
     }
 
-    // add custom field values
-    if (!empty($params['custom']) &&
-      is_array($params['custom'])
-    ) {
-      CRM_Core_BAO_CustomValueTable::store($params['custom'], 'civicrm_participant', $participant->id);
-    }
-
     //process note, CRM-7634
     $noteId = NULL;
     if (!empty($params['id'])) {

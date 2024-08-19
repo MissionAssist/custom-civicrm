@@ -125,8 +125,8 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
     // Make the contributionPageID available to the template
     $this->assign('contributionPageID', $this->_id);
     $this->assign('ccid', $this->_ccid);
-    $this->assign('isShare', CRM_Utils_Array::value('is_share', $this->_values));
-    $this->assign('isConfirmEnabled', CRM_Utils_Array::value('is_confirm_enabled', $this->_values));
+    $this->assign('isShare', $this->_values['is_share'] ?? NULL);
+    $this->assign('isConfirmEnabled', $this->_values['is_confirm_enabled'] ?? NULL);
 
     // Required for currency formatting in the JS layer
     // this is a temporary fix intended to resolve a regression quickly
@@ -250,7 +250,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
             $opMemTypeId = $priceFieldOption['membership_type_id'] ?? NULL;
             $priceFieldName = 'price_' . $priceFieldOption['price_field_id'];
             $priceFieldValue = CRM_Price_BAO_PriceSet::getPriceFieldValueFromURL($this, $priceFieldName);
-            if (!empty($priceFieldValue) && !$existingMembershipTypeID) {
+            if (!empty($priceFieldValue)) {
               CRM_Price_BAO_PriceSet::setDefaultPriceSetField($priceFieldName, $priceFieldValue, $val['html_type'], $this->_defaults);
               // break here to prevent overwriting of default due to 'is_default'
               // option configuration or setting of current membership or
@@ -340,7 +340,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
     }
 
     $this->applyFilter('__ALL__', 'trim');
-    $this->assign('showMainEmail', empty($this->_ccid));
+    $this->assign('showMainEmail', (empty($this->_ccid) && $this->_emailExists === FALSE));
     if (empty($this->_ccid)) {
       if ($this->_emailExists == FALSE) {
         $this->add('text', "email-{$this->_bltID}",
@@ -912,8 +912,8 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
           }
         }
         // $membershipFieldId is set and additional amount is 'No thank you' or NULL then throw error
-        if ($membershipFieldId && !(CRM_Utils_Array::value('price_' . $contributionFieldId, $fields, -1) > 0) && empty($fields['price_' . $otherFieldId])) {
-          $errors["price_{$errorKey}"] = ts('Additional Contribution is required.');
+        if ($membershipFieldId && !(($fields["price_$contributionFieldId"] ?? -1) > 0) && empty($fields['price_' . $otherFieldId])) {
+          $errors["price_$errorKey"] = ts('Additional Contribution is required.');
         }
       }
       if (empty($check) && empty($self->_ccid)) {
@@ -925,7 +925,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         }
       }
       if ($otherAmount && !empty($check)) {
-        $errors["price_{$otherAmount}"] = ts('Amount is required field.');
+        $errors["price_$otherAmount"] = ts('Amount is required field.');
       }
 
       // @todo - this should probably be $this->getFormContext() === 'membership'
@@ -936,25 +936,25 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         $priceFieldMemTypes = [];
 
         foreach ($self->_priceSet['fields'] as $priceId => $value) {
-          if (!empty($fields['price_' . $priceId]) || ($self->isQuickConfig() && $value['name'] === 'membership_amount' && empty($self->_membershipBlock['is_required']))) {
-            if (!empty($fields['price_' . $priceId]) && is_array($fields['price_' . $priceId])) {
-              foreach ($fields['price_' . $priceId] as $priceFldVal => $isSet) {
+          if (!empty($fields["price_$priceId"]) || ($self->isQuickConfig() && $value['name'] === 'membership_amount' && empty($self->_membershipBlock['is_required']))) {
+            if (!empty($fields["price_$priceId"]) && is_array($fields["price_$priceId"])) {
+              foreach ($fields["price_$priceId"] as $priceFldVal => $isSet) {
                 if ($isSet) {
                   $priceFieldIDS[] = $priceFldVal;
                 }
               }
             }
-            elseif (!$value['is_enter_qty'] && !empty($fields['price_' . $priceId])) {
+            elseif (!$value['is_enter_qty'] && !empty($fields["price_$priceId"])) {
               // The check for {!$value['is_enter_qty']} is done since, quantity fields allow entering
               // quantity. And the quantity can't be conisdered as civicrm_price_field_value.id, CRM-9577
-              $priceFieldIDS[] = $fields['price_' . $priceId];
+              $priceFieldIDS[] = $fields["price_$priceId"];
             }
 
             if (!empty($value['options'])) {
               foreach ($value['options'] as $val) {
                 if (!empty($val['membership_type_id']) && (
-                    ($fields['price_' . $priceId] == $val['id']) ||
-                    (isset($fields['price_' . $priceId]) && !empty($fields['price_' . $priceId][$val['id']]))
+                    ($fields["price_$priceId"] == $val['id']) ||
+                    (isset($fields["price_$priceId"]) && !empty($fields["price_$priceId"][$val['id']]))
                   )
                 ) {
                   $priceFieldMemTypes[] = $val['membership_type_id'];
@@ -996,7 +996,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       // @todo - processAmount is to be deprectated - can we use getTotalAmount or
       // a function of self->order here?
       CRM_Price_BAO_PriceSet::processAmount($self->_values['fee'],
-        $fields, $lineItem
+        $fields
       );
 
       $minAmt = CRM_Core_DAO::getFieldValue('CRM_Price_DAO_PriceSet', $fields['priceSetId'], 'min_amount');
@@ -1062,35 +1062,31 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         }
       }
       elseif (!empty($fields['is_pledge'])) {
-        if (CRM_Utils_Rule::positiveInteger(CRM_Utils_Array::value('pledge_installments', $fields)) == FALSE) {
-          $errors['pledge_installments'] = ts('Please enter a valid number of pledge installments.');
-        }
-        else {
           if (!isset($fields['pledge_installments'])) {
             $errors['pledge_installments'] = ts('Pledge Installments is required field.');
           }
-          elseif (($fields['pledge_installments'] ?? NULL) == 1) {
+        elseif (!CRM_Utils_Rule::positiveInteger($fields['pledge_installments'])) {
+          $errors['pledge_installments'] = ts('Please enter a valid number of pledge installments.');
+        }
+        elseif ($fields['pledge_installments'] == 1) {
             $errors['pledge_installments'] = ts('Pledges consist of multiple scheduled payments. Select one-time contribution if you want to make your gift in a single payment.');
           }
-          elseif (empty($fields['pledge_installments'])) {
+        elseif (!$fields['pledge_installments']) {
             $errors['pledge_installments'] = ts('Pledge Installments field must be > 1.');
           }
-        }
 
         //validation for Pledge Frequency Interval.
-        if (CRM_Utils_Rule::positiveInteger(CRM_Utils_Array::value('pledge_frequency_interval', $fields)) == FALSE) {
-          $errors['pledge_frequency_interval'] = ts('Please enter a valid Pledge Frequency Interval.');
-        }
-        else {
           if (!isset($fields['pledge_frequency_interval'])) {
             $errors['pledge_frequency_interval'] = ts('Pledge Frequency Interval. is required field.');
           }
-          elseif (empty($fields['pledge_frequency_interval'])) {
+        elseif (!CRM_Utils_Rule::positiveInteger($fields['pledge_frequency_interval'])) {
+          $errors['pledge_frequency_interval'] = ts('Please enter a valid Pledge Frequency Interval.');
+        }
+        elseif (!$fields['pledge_frequency_interval']) {
             $errors['pledge_frequency_interval'] = ts('Pledge frequency interval field must be > 0');
           }
         }
       }
-    }
 
     // if the user has chosen a free membership or the amount is less than zero
     // i.e. we don't need to validate payment related fields or profiles.
@@ -1210,7 +1206,8 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         $priceOptions = [];
         while ($priceField->fetch()) {
           CRM_Price_BAO_PriceFieldValue::getValues($priceField->id, $priceOptions);
-          if (($selectedPriceOptionID = CRM_Utils_Array::value("price_{$priceField->id}", $params)) != FALSE && $selectedPriceOptionID > 0) {
+        $selectedPriceOptionID = $params["price_{$priceField->id}"] ?? NULL;
+        if ($selectedPriceOptionID && $selectedPriceOptionID > 0) {
             switch ($priceField->name) {
               case 'membership_amount':
                 $this->_params['selectMembership'] = $params['selectMembership'] = $priceOptions[$selectedPriceOptionID]['membership_type_id'] ?? NULL;
@@ -1318,8 +1315,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
 
     // build the confirm page
     $confirmForm = &$this->controller->_pages['Confirm'];
-    $confirmForm->preProcess();
-    $confirmForm->buildQuickForm();
+    $confirmForm->buildForm();
 
     // the confirmation page is valid
     $data = &$this->controller->container();
@@ -1668,21 +1664,21 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       if (!empty($overduePayments)) {
         foreach ($overduePayments as $id => $payment) {
           $label = ts("%1 - due on %2 (overdue)", [
-            1 => CRM_Utils_Money::format(CRM_Utils_Array::value('scheduled_amount', $payment), CRM_Utils_Array::value('scheduled_amount_currency', $payment)),
+            1 => CRM_Utils_Money::format($payment['scheduled_amount'] ?? NULL, $payment['scheduled_amount_currency'] ?? NULL),
             2 => $payment['scheduled_date'] ?? NULL,
           ]);
           $paymentID = $payment['id'] ?? NULL;
-          $payments[] = $this->createElement('checkbox', $paymentID, NULL, $label, ['amount' => CRM_Utils_Array::value('scheduled_amount', $payment)]);
+          $payments[] = $this->createElement('checkbox', $paymentID, NULL, $label, ['amount' => $payment['scheduled_amount'] ?? NULL]);
         }
       }
 
       if (!empty($nextPayment)) {
         $label = ts("%1 - due on %2", [
-          1 => CRM_Utils_Money::format(CRM_Utils_Array::value('scheduled_amount', $nextPayment), CRM_Utils_Array::value('scheduled_amount_currency', $nextPayment)),
+          1 => CRM_Utils_Money::format($nextPayment['scheduled_amount'] ?? NULL, $nextPayment['scheduled_amount_currency'] ?? NULL),
           2 => $nextPayment['scheduled_date'] ?? NULL,
         ]);
         $paymentID = $nextPayment['id'] ?? NULL;
-        $payments[] = $this->createElement('checkbox', $paymentID, NULL, $label, ['amount' => CRM_Utils_Array::value('scheduled_amount', $nextPayment)]);
+        $payments[] = $this->createElement('checkbox', $paymentID, NULL, $label, ['amount' => $nextPayment['scheduled_amount'] ?? NULL]);
       }
       // give error if empty or build form for payment.
       if (empty($payments)) {
