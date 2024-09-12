@@ -7,7 +7,6 @@
  | permitted exceptions and without any warranty. For full license    |
  | and copyright information, see https://civicrm.org/licensing       |
  +--------------------------------------------------------------------+
- * Last modified 7 August 2023 by Stephen Palmstrom
  */
 
 /**

@@ -198,7 +198,7 @@ class CRM_Report_Form_Event_Income extends CRM_Report_Form {
     }
     $rows[ts('Payment Method')] = $instrumentRows;
 
-    $this->assign_by_ref('rows', $rows);
+    $this->assign('rows', $rows);
     if (!$this->_setVariable) {
       $this->_params['id_value'] = NULL;
     }
