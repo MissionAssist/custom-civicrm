@@ -7,7 +7,7 @@
  | permitted exceptions and without any warranty. For full license    |
  | and copyright information, see https://civicrm.org/licensing       |
  +--------------------------------------------------------------------+
-*/
+ */
 
 /**
  *
@@ -366,7 +366,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
             'title' => ts('Submit Credit Card payment'),
             'weight' => 50,
           ];
-      }
+        }
       }
 
       if ($statusTypes[$row['participant_status_id']] === 'Pending refund') {
@@ -420,8 +420,6 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
       if (CRM_Event_BAO_Event::usesPriceSet($row['event_id'])) {
         // add line item details if applicable
         $lineItems[$row['participant_id']] = CRM_Price_BAO_LineItem::getLineItems($row['participant_id']);
-        //MissionAssist specific
-        $row = self::getPaymentStatus($row);
       }
 
       if (!empty($row['participant_role_id'])) {

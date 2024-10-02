@@ -48,7 +48,7 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
     }
 
     return self::writeRecord($params);
-    }
+  }
 
   /**
    * Create report instance.
@@ -186,11 +186,11 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
     if ($event->action === 'delete' && $event->id) {
       // When deleting a report, also delete from navigation menu
       $navId = CRM_Core_DAO::getFieldValue('CRM_Report_DAO_ReportInstance', $event->id, 'navigation_id');
-    if ($navId) {
+      if ($navId) {
         CRM_Core_BAO_Navigation::deleteRecord(['id' => $navId]);
-      CRM_Core_BAO_Navigation::resetNavigation();
+        CRM_Core_BAO_Navigation::resetNavigation();
+      }
     }
-  }
   }
 
   /**
@@ -201,7 +201,7 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
    */
   public static function retrieve($params, &$defaults) {
     return self::commonRetrieve(self::class, $params, $defaults);
-    }
+  }
 
   /**
    * Check if report is private.
@@ -378,6 +378,6 @@ class CRM_Report_BAO_ReportInstance extends CRM_Report_DAO_ReportInstance implem
    */
   public static function getGrouproleOptions(): array {
     return (array) CRM_Core_Config::singleton()->userSystem->getRoleNames();
-}
+  }
 
 }

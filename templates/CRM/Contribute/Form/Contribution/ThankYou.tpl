@@ -45,7 +45,7 @@
         </div>
       {/if}
     {elseif $isPendingOutcome}
-      <div>{ts 1=$paymentProcessor.name}Your contribution has been submitted to %1 for processing.{/ts}</div>
+      <div>{ts 1=$paymentProcessorName|escape}Your contribution has been submitted to %1 for processing.{/ts}</div>
         {if $is_email_receipt}
       <div>
         {if $onBehalfEmail AND ($onBehalfEmail neq $email)}
@@ -75,32 +75,32 @@
 
   {if $amount GTE 0 OR $minimum_fee GTE 0 OR ($priceSetID and $lineItem)}
     <div class="crm-group amount_display-group">
-        <div class="header-dark">
+      <div class="header-dark">
         {if !$membershipBlock AND $amount OR ($priceSetID and $lineItem)}{ts}Contribution Information{/ts}{else}{ts}Membership Fee{/ts}{/if}
-        </div>
+      </div>
 
       <div class="display-block">
-          {if $lineItem and $priceSetID}
-            {if !$amount}{assign var="amount" value=0}{/if}
-            {assign var="totalAmount" value=$amount}
+        {if $lineItem and $priceSetID}
+          {if !$amount}{assign var="amount" value=0}{/if}
+          {assign var="totalAmount" value=$amount}
           {include file="CRM/Price/Page/LineItem.tpl" context="Contribution" displayLineItemFinancialType=false pricesetFieldsCount=false currencySymbol='' hookDiscount=''}
-          {elseif $membership_amount}
-            {$membership_name} {ts}Membership{/ts}: <strong>{$membership_amount|crmMoney}</strong><br />
-            {if $amount}
-              {if !$is_separate_payment}
-                {ts}Contribution Amount{/ts}: <strong>{$amount|crmMoney}</strong><br />
-              {else}
-                {ts}Additional Contribution{/ts}: <strong>{$amount|crmMoney}</strong><br />
-              {/if}
+        {elseif $membership_amount}
+          {$membership_name} {ts}Membership{/ts}: <strong>{$membership_amount|crmMoney}</strong><br />
+          {if $amount}
+            {if !$is_separate_payment}
+              {ts}Contribution Amount{/ts}: <strong>{$amount|crmMoney}</strong><br />
+            {else}
+              {ts}Additional Contribution{/ts}: <strong>{$amount|crmMoney}</strong><br />
             {/if}
-            <strong> -------------------------------------------</strong><br />
-          {ts}Total{/ts}: <strong>{$orderTotal|crmMoney}</strong><br />
-          {else}
-            {if $totalTaxAmount}
-              {ts}Tax Amount{/ts}: <strong>{$totalTaxAmount|crmMoney}</strong><br />
-            {/if}
-          {if $installments}{ts}Installment Amount{/ts}{else}{ts}Amount{/ts}{/if}: <strong>{$amount|crmMoney:$currency}{if $amount_level} &ndash; {$amount_level}{/if}</strong>
           {/if}
+          <strong> -------------------------------------------</strong><br />
+          {ts}Total{/ts}: <strong>{$orderTotal|crmMoney}</strong><br />
+        {else}
+          {if $totalTaxAmount}
+            {ts}Tax Amount{/ts}: <strong>{$totalTaxAmount|crmMoney}</strong><br />
+          {/if}
+          {if $installments}{ts}Installment Amount{/ts}{else}{ts}Amount{/ts}{/if}: <strong>{$amount|crmMoney:$currency}{if $amount_level} &ndash; {$amount_level}{/if}</strong>
+        {/if}
 
         {if $receive_date}
           {ts}Date{/ts}: <strong>{$receive_date|crmDate}</strong><br />
@@ -118,11 +118,11 @@
             {crmRegion name="contribution-thankyou-recur-membership"}
               <br />
               {if !$installments || $installments > 1}
-              {if $frequency_interval > 1}
-                <strong>{ts 1=$frequency_interval 2=$frequency_unit}This membership will be renewed automatically every %1 %2(s).{/ts}</strong>
-              {else}
-                <strong>{ts 1=$frequency_unit}This membership will be renewed automatically every %1.{/ts}</strong>
-              {/if}
+                {if $frequency_interval > 1}
+                  <strong>{ts 1=$frequency_interval 2=$frequency_unit}This membership will be renewed automatically every %1 %2(s).{/ts}</strong>
+                {else}
+                  <strong>{ts 1=$frequency_unit}This membership will be renewed automatically every %1.{/ts}</strong>
+                {/if}
               {else}
                   {* dev/translation#80 All 'every %1' strings are incorrectly using ts, but focusing on the most important one until we find a better fix. *}
                   {if $frequency_unit eq 'day'}
@@ -231,48 +231,48 @@
         {ts}Contribution Honor Roll{/ts}
       </div>
       <div class="display-block">
-          {ts}List my contribution{/ts}
-          {if $pcp_is_anonymous}
-            <strong>{ts}anonymously{/ts}.</strong>
+        {ts}List my contribution{/ts}
+        {if $pcp_is_anonymous}
+          <strong>{ts}anonymously{/ts}.</strong>
+        {else}
+          {ts}under the name{/ts}: <strong>{$pcp_roll_nickname}</strong><br/>
+          {if $pcp_personal_note}
+            {ts}With the personal note{/ts}: <strong>{$pcp_personal_note}</strong>
           {else}
-            {ts}under the name{/ts}: <strong>{$pcp_roll_nickname}</strong><br/>
-            {if $pcp_personal_note}
-              {ts}With the personal note{/ts}: <strong>{$pcp_personal_note}</strong>
-            {else}
-              <strong>{ts}With no personal note{/ts}</strong>
-            {/if}
+            <strong>{ts}With no personal note{/ts}</strong>
           {/if}
+        {/if}
         <br />
       </div>
     </div>
   {/if}
 
-      {if $billingName or $address}
-        <div class="crm-group billing_name_address-group">
-          <div class="header-dark">
-            {ts}Billing Name and Address{/ts}
-          </div>
-          <div class="crm-section no-label billing_name-section">
-            <div class="content">{$billingName}</div>
-            <div class="clear"></div>
-          </div>
-          <div class="crm-section no-label billing_address-section">
-            <div class="content">{$address|nl2br}</div>
-            <div class="clear"></div>
-          </div>
-        </div>
-      {/if}
-  {if !$emailExists && $email}
-      <div class="crm-group contributor_email-group">
+  {if $billingName or $address}
+      <div class="crm-group billing_name_address-group">
         <div class="header-dark">
-          {ts}Your Email{/ts}
+            {ts}Billing Name and Address{/ts}
         </div>
-        <div class="crm-section no-label contributor_email-section">
-          <div class="content">{$email}</div>
+        <div class="crm-section no-label billing_name-section">
+          <div class="content">{$billingName}</div>
+          <div class="clear"></div>
+        </div>
+        <div class="crm-section no-label billing_address-section">
+          <div class="content">{$address|nl2br}</div>
           <div class="clear"></div>
         </div>
       </div>
     {/if}
+  {if !$emailExists && $email}
+    <div class="crm-group contributor_email-group">
+      <div class="header-dark">
+          {ts}Your Email{/ts}
+      </div>
+      <div class="crm-section no-label contributor_email-section">
+        <div class="content">{$email}</div>
+        <div class="clear"></div>
+      </div>
+    </div>
+  {/if}
 
   {if in_array('credit_card_number', $paymentFields) || in_array('bank_account_number', $paymentFields) && ($amount GT 0 OR $minimum_fee GT 0)}
     {crmRegion name="contribution-thankyou-billing-block"}

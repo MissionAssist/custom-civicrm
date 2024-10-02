@@ -176,8 +176,8 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       $billingDefaults = $this->getProfileDefaults('Billing', $contactID);
       $this->_defaults = array_merge($this->_defaults, $billingDefaults);
       $fields = $this->getContactProfileFields();
-        CRM_Core_BAO_UFGroup::setProfileDefaults($contactID, $fields, $this->_defaults);
-      }
+      CRM_Core_BAO_UFGroup::setProfileDefaults($contactID, $fields, $this->_defaults);
+    }
 
     $balance = $this->getContributionBalance();
     if ($balance) {
@@ -217,9 +217,9 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
           $paymentAmount += $value['scheduled_amount'];
           $duePayment = TRUE;
         }
-        }
+      }
       $this->_defaults['price_' . $this->_priceSetId] = $paymentAmount;
-        }
+    }
     elseif (!empty($this->_values['pledge_block_id'])) {
       //set default to one time contribution.
       $this->_defaults['is_pledge'] = 0;
@@ -283,7 +283,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
                 CRM_Core_BAO_CustomField::setProfileDefaults($customFieldID, $name, $this->_defaults,
                   $existingMembershipTypeID, CRM_Profile_Form::MODE_REGISTER
                 );
-      }
+              }
             }
           }
         }
@@ -299,7 +299,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       if (array_key_exists('contribution_campaign_id', $this->_fields)) {
         $this->_defaults['contribution_campaign_id'] = $this->_values['campaign_id'] ?? NULL;
       }
-          }
+    }
 
     if (!empty($this->_paymentProcessors)) {
       foreach ($this->_paymentProcessors as $pid => $value) {
@@ -663,43 +663,43 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         $membershipTypeValues = CRM_Member_BAO_Membership::buildMembershipTypeValues($this, $membershipTypeIds);
         $this->_membershipTypeValues = $membershipTypeValues;
       }
-        $endDate = NULL;
+      $endDate = NULL;
 
       foreach ($membershipTypeIds as $membershipTypeID) {
         $memType = $membershipTypeValues[$membershipTypeID];
-          if ($memType['is_active']) {
+        if ($memType['is_active']) {
           $autoRenewMembershipTypeOptions["autoRenewMembershipType_{$membershipTypeID}"] = $this->getConfiguredAutoRenewOptionForMembershipType($membershipTypeID);
           if ($this->isPageHasPaymentProcessorSupportForRecurring()) {
-              $allowAutoRenewMembership = TRUE;
-            }
-            else {
-              $javascriptMethod = NULL;
-            }
-
-            //add membership type.
-            $radio[$memType['id']] = NULL;
-              //show current membership, skip pending and cancelled membership records,
-          $membership = $this->getExistingMembership($membershipTypeID);
-              if ($membership) {
-                if ($membership["membership_type_id.duration_unit:name"] === 'lifetime') {
-                  unset($radio[$memType['id']]);
-                  $this->assign('hasExistingLifetimeMembership', TRUE);
-                  continue;
-                }
-            $this->define('Membership', 'RenewableMembership', $membership);
-                $memType['current_membership'] = $membership['end_date'];
-                if (!$endDate) {
-                  $endDate = $memType['current_membership'];
-                  $this->_defaultMemTypeId = $memType['id'];
-                }
-                if ($memType['current_membership'] < $endDate) {
-                  $endDate = $memType['current_membership'];
-                  $this->_defaultMemTypeId = $memType['id'];
-                }
-              }
-            $membershipTypes[] = $memType;
+            $allowAutoRenewMembership = TRUE;
           }
+          else {
+            $javascriptMethod = NULL;
+          }
+
+          //add membership type.
+          $radio[$memType['id']] = NULL;
+          //show current membership, skip pending and cancelled membership records,
+          $membership = $this->getExistingMembership($membershipTypeID);
+          if ($membership) {
+            if ($membership["membership_type_id.duration_unit:name"] === 'lifetime') {
+              unset($radio[$memType['id']]);
+              $this->assign('hasExistingLifetimeMembership', TRUE);
+              continue;
+            }
+            $this->define('Membership', 'RenewableMembership', $membership);
+            $memType['current_membership'] = $membership['end_date'];
+            if (!$endDate) {
+              $endDate = $memType['current_membership'];
+              $this->_defaultMemTypeId = $memType['id'];
+            }
+            if ($memType['current_membership'] < $endDate) {
+              $endDate = $memType['current_membership'];
+              $this->_defaultMemTypeId = $memType['id'];
+            }
+          }
+          $membershipTypes[] = $memType;
         }
+      }
 
       $this->assign('membershipBlock', $this->_membershipBlock);
       $this->assign('showRadio', TRUE);
@@ -712,11 +712,11 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       $this->assign('takeUserSubmittedAutoRenew', $takeUserSubmittedAutoRenew);
       $autoRenewOption = $this->getAutoRenewOption();
       // Assign autorenew option (0:hide,1:optional,2:required) so we can use it in confirmation etc.
-        $this->assign('autoRenewOption', $autoRenewOption);
+      $this->assign('autoRenewOption', $autoRenewOption);
 
       if ((!$this->_values['is_pay_later'] || is_array($this->_paymentProcessors)) && ($allowAutoRenewMembership || $autoRenewOption)) {
-          $this->addElement('checkbox', 'auto_renew', ts('Please renew my membership automatically.'));
-        }
+        $this->addElement('checkbox', 'auto_renew', ts('Please renew my membership automatically.'));
+      }
 
     }
 
@@ -1062,31 +1062,31 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         }
       }
       elseif (!empty($fields['is_pledge'])) {
-          if (!isset($fields['pledge_installments'])) {
-            $errors['pledge_installments'] = ts('Pledge Installments is required field.');
-          }
+        if (!isset($fields['pledge_installments'])) {
+          $errors['pledge_installments'] = ts('Pledge Installments is required field.');
+        }
         elseif (!CRM_Utils_Rule::positiveInteger($fields['pledge_installments'])) {
           $errors['pledge_installments'] = ts('Please enter a valid number of pledge installments.');
         }
         elseif ($fields['pledge_installments'] == 1) {
-            $errors['pledge_installments'] = ts('Pledges consist of multiple scheduled payments. Select one-time contribution if you want to make your gift in a single payment.');
-          }
+          $errors['pledge_installments'] = ts('Pledges consist of multiple scheduled payments. Select one-time contribution if you want to make your gift in a single payment.');
+        }
         elseif (!$fields['pledge_installments']) {
-            $errors['pledge_installments'] = ts('Pledge Installments field must be > 1.');
-          }
+          $errors['pledge_installments'] = ts('Pledge Installments field must be > 1.');
+        }
 
         //validation for Pledge Frequency Interval.
-          if (!isset($fields['pledge_frequency_interval'])) {
-            $errors['pledge_frequency_interval'] = ts('Pledge Frequency Interval. is required field.');
-          }
+        if (!isset($fields['pledge_frequency_interval'])) {
+          $errors['pledge_frequency_interval'] = ts('Pledge Frequency Interval. is required field.');
+        }
         elseif (!CRM_Utils_Rule::positiveInteger($fields['pledge_frequency_interval'])) {
           $errors['pledge_frequency_interval'] = ts('Please enter a valid Pledge Frequency Interval.');
         }
         elseif (!$fields['pledge_frequency_interval']) {
-            $errors['pledge_frequency_interval'] = ts('Pledge frequency interval field must be > 0');
-          }
+          $errors['pledge_frequency_interval'] = ts('Pledge frequency interval field must be > 0');
         }
       }
+    }
 
     // if the user has chosen a free membership or the amount is less than zero
     // i.e. we don't need to validate payment related fields or profiles.
@@ -1198,31 +1198,31 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
 
     if ($this->isQuickConfig()) {
       // @todo - this is silly cruft - we can likely remove it.
-        $priceField = new CRM_Price_DAO_PriceField();
+      $priceField = new CRM_Price_DAO_PriceField();
       $priceField->price_set_id = $this->getPriceSetID();
-        $priceField->orderBy('weight');
-        $priceField->find();
+      $priceField->orderBy('weight');
+      $priceField->find();
 
-        $priceOptions = [];
-        while ($priceField->fetch()) {
-          CRM_Price_BAO_PriceFieldValue::getValues($priceField->id, $priceOptions);
+      $priceOptions = [];
+      while ($priceField->fetch()) {
+        CRM_Price_BAO_PriceFieldValue::getValues($priceField->id, $priceOptions);
         $selectedPriceOptionID = $params["price_{$priceField->id}"] ?? NULL;
         if ($selectedPriceOptionID && $selectedPriceOptionID > 0) {
-            switch ($priceField->name) {
-              case 'membership_amount':
-                $this->_params['selectMembership'] = $params['selectMembership'] = $priceOptions[$selectedPriceOptionID]['membership_type_id'] ?? NULL;
-                $this->set('selectMembership', $params['selectMembership']);
-                break;
+          switch ($priceField->name) {
+            case 'membership_amount':
+              $this->_params['selectMembership'] = $params['selectMembership'] = $priceOptions[$selectedPriceOptionID]['membership_type_id'] ?? NULL;
+              $this->set('selectMembership', $params['selectMembership']);
+              break;
 
-              case 'other_amount':
+            case 'other_amount':
               // Only used now when deciding whether to assign
               // amount_level to the template in subsequent screens.
-                $params['amount_other'] = $selectedPriceOptionID;
-                break;
-            }
+              $params['amount_other'] = $selectedPriceOptionID;
+              break;
           }
         }
       }
+    }
 
     $params['amount'] = $this->getMainContributionAmount();
     $this->set('amount_level', $this->order->getAmountLevel());
@@ -1235,7 +1235,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
         $this->processAmountAndGetAutoRenew($params);
       }
       $this->set('lineItem', [$this->getPriceSetID() => $this->getLineItems()]);
-      }
+    }
 
     if ($params['amount'] != 0 && (($this->_values['is_pay_later'] &&
           empty($this->_paymentProcessor) &&
@@ -1338,11 +1338,10 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
     $this->assign('pendingAmount', $this->getContributionBalance());
     if (empty($this->getExistingContributionID())) {
       return;
-      }
-    // @todo - all this stuff is likely obsolete.
-    if ($taxAmount = CRM_Core_DAO::getFieldValue('CRM_Contribute_DAO_Contribution', $this->_ccid, 'tax_amount')) {
-      $this->assign('taxAmount', $taxAmount);
     }
+
+    $this->assign('taxAmount', $this->getContributionValue('tax_amount'));
+    $this->assign('taxTerm', Civi::settings()->get('tax_term'));
 
     $lineItems = $this->getExistingContributionLineItems();
     $this->assign('lineItem', [$this->getPriceSetID() => $lineItems]);
@@ -1371,7 +1370,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       CRM_Core_Error::statusBounce(ts('Returning since contribution has already been handled.'));
     }
     return $paymentBalance;
-    }
+  }
 
   /**
    * Function for unit tests on the postProcess function.
@@ -1429,7 +1428,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
     foreach (['soft_credit', 'on_behalf'] as $module) {
       if ($module === 'soft_credit') {
         $this->addSoftCreditFields();
-}
+      }
       else {
         $this->addOnBehalfFields();
       }
@@ -1829,7 +1828,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
       foreach ($priceField['options'] ?? [] as $option) {
         if (!empty($option['membership_type_id'])) {
           $membershipTypeIDs[$option['membership_type_id']] = $option['membership_type_id'];
-    }
+        }
       }
     }
     return $membershipTypeIDs;
@@ -1927,7 +1926,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
           'Membership',
         ])) {
           continue;
-}
+        }
         // ignore component fields
       }
       elseif (array_key_exists($name, $contribFields) || (substr($name, 0, 11) === 'membership_') || (substr($name, 0, 13) == 'contribution_')) {
@@ -1989,7 +1988,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
   public function getRenewableMembershipValue(string $value) {
     if (!$this->isDefined('RenewableMembership')) {
       return NULL;
-}
+    }
     return $this->lookup('RenewableMembership', $value);
   }
 
