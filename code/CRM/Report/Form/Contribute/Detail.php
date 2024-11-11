@@ -527,7 +527,7 @@ GROUP BY {$this->_aliases['civicrm_contribution']}.currency";
    *
    * @return string
    */
-  public function buildQuery($applyLimit = FALSE, $checkPermissions=TRUE) {
+  public function buildQuery($applyLimit = FALSE, $checkPermissions=TRUE) { //MissionAssist
     if ($this->isTempTableBuilt) {
       $this->limit();
       return "SELECT SQL_CALC_FOUND_ROWS * FROM {$this->temporaryTables['civireport_contribution_detail_temp3']['name']} $this->_orderBy $this->_limit";

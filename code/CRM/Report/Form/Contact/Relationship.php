@@ -114,7 +114,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       ],
       'civicrm_contact_b' => [
         'dao' => 'CRM_Contact_DAO_Contact',
-        'alias' => 'contact_b',          
+        'alias' => 'contact_b',
         'fields' => [
           'sort_name_b' => [
             'title' => ts('Contact B'),
@@ -132,7 +132,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'contact_type_b' => [
             'title' => ts('Contact Type (Contact B)'),
             'name' => 'contact_type',
-       ],
+          ],
           'contact_sub_type_b' => [
             'title' => ts('Contact Subtype (Contact B)'),
             'name' => 'contact_sub_type',
@@ -140,7 +140,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         ],
         'filters' => [
           'sort_name_b' => [
-            'title' => ts('Name'),
+            'title' => ts('Name'), //MissionAssist
             'name' => 'sort_name',
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
@@ -151,9 +151,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => $contact_type,
             'type' => CRM_Utils_Type::T_STRING,
-            'default' => 'Individual',
-            'no_display' => TRUE,
+            'default' => 'Individual', //MissionAssist
+            'no_display' => TRUE, //MissionAssist
           ],
+        //MissionAssist
          'contact_b' => [
              'title' => ts('Do not trade'),
              'name' => 'do_not_trade',
@@ -162,10 +163,11 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
              'no_display' => !(CRM_Core_Permission::check('administer users') ||
                 CRM_Core_Permission::check('view all contacts')),
          ],
+         //MissionAssist end
         ],
         'order_bys' => [
           'sort_name_b' => [
-            'title' => ts('Name'),
+            'title' => ts('Name'), //MissionAssist
             'name' => 'sort_name',
             'default_weight' => '2',
           ],
@@ -187,7 +189,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         'alias' => 'email_b',
         'fields' => [
           'email_b' => [
-            'title' => ts('Personal MA Email'),
+            'title' => ts('Personal MA Email'), //MissionAssist
             'name' => 'email',
           ],
         ],
@@ -231,7 +233,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'default' => TRUE,
           ],
           'label_b_a' => [
-            'title' => ts('Relationship'),
+            'title' => ts('Relationship'), //MissionAssist
             'default' => TRUE,
           ],
         ],
@@ -268,7 +270,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'is_active' => [
             'title' => ts('Is active?'),
             'type' => CRM_Utils_Type::T_BOOLEAN,
-        ],
+          ],
           'relationship_id' => [
             'title' => ts('Rel ID'),
             'name' => 'id',
@@ -304,11 +306,11 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'start_date' => [
             'title' => ts('Start Date'),
             'type' => CRM_Utils_Type::T_DATE,
-        ],
+          ],
           'end_date' => [
             'title' => ts('End Date'),
             'type' => CRM_Utils_Type::T_DATE,
-      ],
+          ],
           'active_period_date' => [
             'title' => ts('Active Period'),
             'type' => CRM_Utils_Type::T_DATE,
@@ -335,10 +337,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'end_date' => [
             'title' => ts('End Date'),
             'name' => 'end_date',
-        ],
-      ],
-        'grouping' => 'relation-fields',
           ],
+        ],
+        'grouping' => 'relation-fields',
+      ],
       'civicrm_address' => [
         'dao' => 'CRM_Core_DAO_Address',
         'filters' => [
@@ -347,16 +349,16 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::country(),
-        ],
+          ],
           'state_province_id' => [
             'title' => ts('State/Province'),
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::stateProvince(),
-      ],
           ],
-        'grouping' => 'contact-fields',
         ],
+        'grouping' => 'contact-fields',
+      ],
     ];
 
     $this->_groupFilter = TRUE;
@@ -763,7 +765,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         $rows[$rowNum]['civicrm_contact_sort_name_a_hover'] = ts('View Contact Details for this contact');
         //End MissionAssist
         $entryFound = TRUE;
-        }
+      }
 
       // Handle contact name B
       // @todo refactor into separate function

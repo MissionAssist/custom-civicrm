@@ -59,7 +59,7 @@ class CRM_Report_Form_Contact_Summary extends CRM_Report_Form {
               'default' => FALSE,
             ],
           ]
-            ),
+        ),
         'filters' => $this->getBasicContactFilters(),
         'grouping' => 'contact-fields',
         'order_bys' => [
