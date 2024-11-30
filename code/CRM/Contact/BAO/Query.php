@@ -4989,9 +4989,7 @@ civicrm_relationship.start_date > {$today}
     $additionalFromClause = NULL, $skipOrderAndLimit = FALSE
   ) {
 
-    $query = $this->getSearchSQL($offset, $rowCount, $sort, $count,
-      $includeContactIds, $sortByChar, $groupContacts, $additionalWhereClause,
-      $sortOrder, $additionalFromClause, $skipOrderAndLimit);
+    $query = $this->getSearchSQL($offset, $rowCount, $sort, $count, $includeContactIds, $sortByChar, $groupContacts, $additionalWhereClause, $sortOrder, $additionalFromClause, $skipOrderAndLimit);
 
     if ($returnQuery) {
       return $query;
