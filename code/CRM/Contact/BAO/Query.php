@@ -1412,12 +1412,12 @@ class CRM_Contact_BAO_Query {
    * @param bool $count
    * @param bool $sortByChar
    * @param bool $groupContacts
-   * @param int $onlyDeleted
+   * @param bool $onlyDeleted
    *
    * @return array
    *   sql query parts as an array
    */
-  public function query($count = FALSE, $sortByChar = FALSE, $groupContacts = FALSE, $onlyDeleted = 0) {
+  public function query($count = FALSE, $sortByChar = FALSE, $groupContacts = FALSE, $onlyDeleted = FALSE) {
     // build permission clause
     $this->generatePermissionClause($onlyDeleted, $count);
 
@@ -2557,7 +2557,7 @@ class CRM_Contact_BAO_Query {
    *   Determines search mode based on bitwise MODE_* constants.
    * @param string|null $apiEntity
    *   Determines search mode based on entity by string.
-   * @param int $onlyDeleted
+   * @param bool $onlyDeleted
    *   Determines if we are only looking for deleted contacts
    *
    * The $primaryLocation flag only seems to be used when
@@ -2571,7 +2571,7 @@ class CRM_Contact_BAO_Query {
    *   the from clause
    */
   public static function fromClause(&$tables, $inner = NULL, $right = NULL, 
-    $primaryLocation = TRUE, $mode = 1, $apiEntity = NULL, $onlyDeleted = 0) {
+    $primaryLocation = TRUE, $mode = 1, $apiEntity = NULL, $onlyDeleted = FALSE) {
 
     $from = ' FROM civicrm_contact contact_a';
     if (empty($tables)) {
@@ -3631,7 +3631,7 @@ WHERE  $smartGroupClause
   public function phone_option_group($values) {
     [$name, $op, $value, $grouping, $wildcard] = $values;
     $option = ($name == 'phone_phone_type_id' ? 'phone_type_id' : 'location_type_id');
-    $options = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Phone', $option);
+    $options = CRM_Core_DAO_Phone::buildOptions($option);
     $optionName = $options[$value];
     $this->_qill[$grouping][] = ts('Phone') . ' ' . ($name == 'phone_phone_type_id' ? ts('type') : ('location')) . " $op $optionName";
     $this->_where[$grouping][] = self::buildClause('civicrm_phone.' . substr($name, 6), $op, $value, 'Integer');
@@ -3802,7 +3802,7 @@ WHERE  $smartGroupClause
       $this->_tables['civicrm_address'] = 1;
       $this->_whereTables['civicrm_address'] = 1;
 
-      $locationType = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id');
+      $locationType = CRM_Core_DAO_Address::buildOptions('location_type_id');
       $names = [];
       foreach ($value as $id) {
         $names[] = $locationType[$id];
@@ -4432,7 +4432,7 @@ civicrm_relationship.start_date > {$today}
       $tableName = $forceTableName . '.';
     }
     else {
-      //End MissiionAssist
+      //End MissionAssist
       $tableName = $forceTableName ? 'civicrm_relationship.' : '';
     } // End MissionAssist
 
@@ -5110,13 +5110,13 @@ civicrm_relationship.start_date > {$today}
         $clauses = array_filter(CRM_Activity_BAO_Activity::getSelectWhereClause());
         if ($clauses) {
           $this->_permissionWhereClause .= ($this->_permissionWhereClause ? ' AND ' : '') . '(' . implode(' AND ', $clauses) . ')';
-          }
-          }
+        }
+      }
       if (isset($this->_tables['civicrm_contribution'])) {
         $contributionClauses = array_filter(CRM_Contribute_BAO_Contribution::getSelectWhereClause());
         if (!empty($contributionClauses)) {
           $this->_permissionWhereClause .= ($this->_permissionWhereClause ? ' AND ' : '') . '(' . implode(' AND ', $contributionClauses) . ')';
-          }
+        }
       }
     }
     else {
@@ -6061,7 +6061,7 @@ AND   displayRelType.is_active = 1
           $viewValues = explode(CRM_Core_DAO::VALUE_SEPARATOR, $val);
 
           if ($value['pseudoField'] == 'participant_role') {
-            $pseudoOptions = CRM_Core_PseudoConstant::get('CRM_Event_DAO_Participant', 'role_id');
+            $pseudoOptions = CRM_Event_DAO_Participant::buildOptions('role_id');
             foreach ($viewValues as $k => $v) {
               $viewValues[$k] = $pseudoOptions[$v];
             }
@@ -6542,10 +6542,9 @@ AND   displayRelType.is_active = 1
       return FALSE;
     }
     $pseudoConstant = $realField['pseudoconstant'];
-    if (empty($pseudoConstant['optionGroupName']) &&
-      ($pseudoConstant['labelColumn'] ?? NULL) !== 'name') {
+
+    if (empty($pseudoConstant['optionGroupName']) && ((($pseudoConstant['prefetch'] ?? NULL) === 'disabled') || !empty($pseudoConstant['abbrColumn']))) {
       // We are increasing our pseudoconstant handling - but still very cautiously,
-      // hence the check for labelColumn === name
       return FALSE;
     }
 
@@ -6744,7 +6743,7 @@ AND   displayRelType.is_active = 1
 
     $sqlParts = $this->getSearchSQLParts($offset, $rowCount, $sort, $count, $includeContactIds, $sortByChar, $groupContacts, $additionalWhereClause, $sortOrder, $additionalFromClause);
     return "{$sqlParts['select']} {$sqlParts['from']} {$sqlParts['where']} {$sqlParts['having']} {$sqlParts['group_by']} {$sqlParts['order_by']} {$sqlParts['limit']}";
-    }
+  }
 
   /**
    * Get the component parts of the search query as an array.
@@ -6977,8 +6976,7 @@ AND   displayRelType.is_active = 1
    */
   protected function isPseudoFieldAnFK($fieldSpec) {
     if (empty($fieldSpec['FKClassName'])
-      || ($fieldSpec['pseudoconstant']['keyColumn'] ?? NULL) !== 'id'
-      || ($fieldSpec['pseudoconstant']['labelColumn'] ?? NULL) !== 'name') {
+      || ($fieldSpec['pseudoconstant']['keyColumn'] ?? NULL) !== 'id') {
       return FALSE;
     }
     return TRUE;

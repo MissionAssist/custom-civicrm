@@ -302,7 +302,9 @@ WHERE  title = %1
     $updateNestingCache = FALSE;
     if ($this->_action & CRM_Core_Action::DELETE) {
       CRM_Contact_BAO_Group::discard($this->_id);
+      //MissionAssist until form is labelled correctly
       CRM_Core_Session::setStatus(ts("The Group '%1' has been deleted.", [1 => $this->_groupValues['frontend_title']]), ts('Group Deleted'), 'success');
+      //MissionAssist end
       $updateNestingCache = TRUE;
     }
     else {
@@ -332,7 +334,7 @@ WHERE  title = %1
         $params['organization_id'] = empty($params['organization_id']) ? 'null' : $params['organization_id'];
       }
 
-      $group = CRM_Contact_BAO_Group::create($params);
+      $group = CRM_Contact_BAO_Group::writeRecord($params);
       // Set the entity id so it is available to postProcess hook consumers
       $this->setEntityId($group->id);
 

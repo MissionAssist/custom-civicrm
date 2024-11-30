@@ -153,7 +153,7 @@ class CRM_Contribute_Form_Contribution_Main extends CRM_Contribute_Form_Contribu
     }
     $this->assign('qParams', $qParams);
     $this->assign('footer_text', $this->_values['footer_text'] ?? NULL);
-    }
+  }
 
   /**
    * Set the default values.
