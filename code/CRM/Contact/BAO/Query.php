@@ -424,11 +424,12 @@ class CRM_Contact_BAO_Query {
   public $_groupUniqueKey;
   public $_groupKeys = [];
 
-  /*
+  /**
    * @var int
    * Set to 1 if Search in Trash selected.
    */
   public $_onlyDeleted = 0;
+
   /**
    * Class constructor which also does all the work.
    *
@@ -609,7 +610,7 @@ class CRM_Contact_BAO_Query {
     $this->_fromClause = self::fromClause($this->_tables, NULL, NULL,
       $this->_primaryLocation, $this->_mode, $apiEntity, $this->_onlyDeleted);
     $this->_simpleFromClause = self::fromClause($this->_whereTables, NULL,
-      NULL, $this->_primaryLocation, $this->_mode, null, $this->_onlyDeleted);
+      NULL, $this->_primaryLocation, $this->_mode, NULL, $this->_onlyDeleted);
     $this->openedSearchPanes(TRUE);
   }
 
@@ -1412,12 +1413,12 @@ class CRM_Contact_BAO_Query {
    * @param bool $count
    * @param bool $sortByChar
    * @param bool $groupContacts
-   * @param bool $onlyDeleted
+   * @param int $onlyDeleted
    *
    * @return array
    *   sql query parts as an array
    */
-  public function query($count = FALSE, $sortByChar = FALSE, $groupContacts = FALSE, $onlyDeleted = FALSE) {
+  public function query($count = FALSE, $sortByChar = FALSE, $groupContacts = FALSE, $onlyDeleted = 0) {
     // build permission clause
     $this->generatePermissionClause($onlyDeleted, $count);
 
@@ -2557,7 +2558,7 @@ class CRM_Contact_BAO_Query {
    *   Determines search mode based on bitwise MODE_* constants.
    * @param string|null $apiEntity
    *   Determines search mode based on entity by string.
-   * @param bool $onlyDeleted
+   * @param int $onlyDeleted
    *   Determines if we are only looking for deleted contacts
    *
    * The $primaryLocation flag only seems to be used when
@@ -2570,8 +2571,8 @@ class CRM_Contact_BAO_Query {
    * @return string
    *   the from clause
    */
-  public static function fromClause(&$tables, $inner = NULL, $right = NULL, 
-    $primaryLocation = TRUE, $mode = 1, $apiEntity = NULL, $onlyDeleted = FALSE) {
+  public static function fromClause(&$tables, $inner = NULL, $right = NULL,
+    $primaryLocation = TRUE, $mode = 1, $apiEntity = NULL, $onlyDeleted = 0) {
 
     $from = ' FROM civicrm_contact contact_a';
     if (empty($tables)) {
