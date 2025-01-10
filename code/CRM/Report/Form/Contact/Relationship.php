@@ -14,9 +14,7 @@
  * @package CRM
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
-/*
- *  Last modified by Stephen Palmstrom 9 April 2024
- * 
+/* 
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
  * the contact record in question. If not, to a custom profile.
