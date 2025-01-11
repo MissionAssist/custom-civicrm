@@ -682,9 +682,8 @@ ORDER BY  cv.label
         // Check if the participant was registered by somebody else
         $registeredById = CRM_Event_BAO_Participant::getRegisteredByID($id);
         if ($registeredById) {
-          // Clear the list of ids.
-          $ids = null;
-          $ids[] = $registeredById;
+          // Don't keep adding to the array.
+          $ids[0] = $registeredById;
           $primaryContact_id = CRM_Event_DAO_Participant::getContactIDsFromComponent($ids, 'civicrm_participant');
           $primaryContact = CRM_Contact_BAO_Contact::getContactDetails($primaryContact_id[0]);
           $rows[$rowNum]['civicrm_participant_participant_fee_amount'] = 'Registered by </br>' . $primaryContact[0];
