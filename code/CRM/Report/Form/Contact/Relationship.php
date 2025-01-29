@@ -14,14 +14,14 @@
  * @package CRM
  * @copyright CiviCRM LLC https://civicrm.org/licensing
  */
-/* 
+/* MissionAssist
  * This custom report displays the relationship between volunteers and their
  * organisations. If the user is sufficently privileged, there is a link to
  * the contact record in question. If not, to a custom profile.
  * 
  * This means that we do not check if the user as View All Contacts since we
  * provide limited contact information.
- */
+ End MissionAssist */
 class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
   protected $_summary = NULL;
