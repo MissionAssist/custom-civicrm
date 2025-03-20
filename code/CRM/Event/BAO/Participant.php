@@ -1086,7 +1086,7 @@ INNER JOIN civicrm_price_field_value value ON ( value.id = lineItem.price_field_
    *   $displayName => $viewUrl
    */
   public static function getAdditionalParticipants($primaryParticipantID) {
-    $additionalParticipantIDs = [];
+    $additionalParticipants = [];
     $additionalParticipantIDs = self::getAdditionalParticipantIds($primaryParticipantID);
     if (!empty($additionalParticipantIDs)) {
       foreach ($additionalParticipantIDs as $additionalParticipantID) {

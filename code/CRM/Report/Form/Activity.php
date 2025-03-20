@@ -686,8 +686,10 @@ class CRM_Report_Form_Activity extends CRM_Report_Form {
    * @param array $tableAlias
    *
    * @throws \CRM_Core_Exception
+   * MissionAssist
    */
   public function buildACLClause($tableAlias = 'contact_a', $checkPermissions = TRUE) {
+    // end MissionAssist
     //override for ACL( Since Contact may be source
     //contact/assignee or target also it may be null )
 
@@ -782,8 +784,10 @@ GROUP BY civicrm_activity_id $having {$this->_orderBy}";
    * @param $applyLimit
    *
    * @return string
+   * MissionAssist
    */
   public function buildQuery($applyLimit = TRUE, $checkPermissions = TRUE) {
+    //End MissionAssist
     $activityContacts = CRM_Activity_BAO_ActivityContact::buildOptions('record_type_id', 'validate');
     $sourceID = CRM_Utils_Array::key('Activity Source', $activityContacts);
 
