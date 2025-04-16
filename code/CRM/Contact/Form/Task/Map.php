@@ -143,7 +143,7 @@ class CRM_Contact_Form_Task_Map extends CRM_Contact_Form_Task {
       if ($config->mapProvider == 'Google' || $config->mapProvider == 'OpenStreetMaps') {
         $imageUrlOnly = TRUE;
       }
-      // MissioinAssistuses $newIds
+      // MissionAssist uses $newIds
       $locations = CRM_Contact_BAO_Contact_Location::getMapInfo($newIds, $locationId, $imageUrlOnly);
     }
     else {
