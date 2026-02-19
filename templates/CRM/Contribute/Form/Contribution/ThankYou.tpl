@@ -112,8 +112,6 @@
           {if $membership_trx_id}
             {ts}Membership Transaction #{/ts}: {$membership_trx_id}
           {/if}
-          {if $installments}{ts}Installment Amount{/ts}{else}{ts}Amount{/ts}{/if}: <strong>{$amount|crmMoney:$currency}{if $amount_level} &ndash; {$amount_level}{/if}</strong>
-        {/if}
 
           {* Recurring contribution / pledge information *}
           {if $is_recur}
