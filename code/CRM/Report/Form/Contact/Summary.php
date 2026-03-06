@@ -203,7 +203,7 @@ class CRM_Report_Form_Contact_Summary extends CRM_Report_Form {
             $rows[$rowNum]['civicrm_contact_id'] . ')';
           $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts('View Profile for this contact');
         }
-
+		// End MissionAssist
         $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
         $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts('View Contact Detail Report for this contact');
         $entryFound = TRUE;
