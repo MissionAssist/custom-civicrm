@@ -5640,6 +5640,7 @@ civicrm_relationship.start_date > {$today}
         return ($dataType === 'Date') ? " $field IS NOT NULL " : " (NULLIF($field, '') IS NOT NULL) ";
 
       case 'RLIKE':
+        $value = $isAlreadyEscaped ? $value : CRM_Core_DAO::escapeString($value);
         return " CAST({$field} AS BINARY) RLIKE BINARY '{$value}' ";
 
       case 'IN':
